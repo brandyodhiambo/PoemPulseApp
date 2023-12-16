@@ -28,6 +28,21 @@ kotlin {
                 implementation(compose.material)
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.components.resources)
+
+                // Koin
+                api("io.insert-koin:koin-core:3.2.2")
+
+                // Ktor
+                implementation("io.ktor:ktor-client-core:2.2.1")
+                implementation("io.ktor:ktor-client-content-negotiation:2.2.1")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:2.2.1")
+                implementation("io.ktor:ktor-client-json:2.2.1")
+                implementation("io.ktor:ktor-client-logging:2.2.1")
+                implementation("io.ktor:ktor-client-serialization:2.2.1")
+
+                // Voyager
+                val voyagerVersion = "1.0.0-rc04"
+                implementation("cafe.adriel.voyager:voyager-navigator:$voyagerVersion")
             }
         }
         val androidMain by getting {
@@ -35,6 +50,9 @@ kotlin {
                 api("androidx.activity:activity-compose:1.7.2")
                 api("androidx.appcompat:appcompat:1.6.1")
                 api("androidx.core:core-ktx:1.10.1")
+
+                api("io.ktor:ktor-client-android:2.2.1")
+                implementation("io.coil-kt:coil-compose:2.3.0")
             }
         }
         val iosX64Main by getting
@@ -56,7 +74,7 @@ kotlin {
 
 android {
     compileSdk = (findProperty("android.compileSdk") as String).toInt()
-    namespace = "com.myapplication.common"
+    namespace = "com.brandyodhiambo.common"
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
