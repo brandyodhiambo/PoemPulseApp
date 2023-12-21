@@ -28,6 +28,16 @@ android {
         versionCode = 1
         versionName = "1.0"
     }
+
+    buildTypes{
+        getByName("release"){
+            isMinifyEnabled = false
+        }
+    }
+
+    buildFeatures{
+        buildConfig = true
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -38,6 +48,6 @@ android {
 }
 
 dependencies {
-    implementation("io.insert-koin:koin-core:3.2.2")
-    implementation("io.insert-koin:koin-android:3.2.3")
+    implementation("io.insert-koin:koin-core:3.5.0")
+    implementation("io.insert-koin:koin-android:3.5.0")
 }

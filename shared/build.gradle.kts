@@ -2,6 +2,7 @@ plugins {
     kotlin("multiplatform")
     id("com.android.library")
     id("org.jetbrains.compose")
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.20"
 }
 
 kotlin {
@@ -12,7 +13,7 @@ kotlin {
     listOf(
         iosX64(),
         iosArm64(),
-        iosSimulatorArm64()
+        iosSimulatorArm64(),
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "shared"
@@ -30,15 +31,15 @@ kotlin {
                 implementation(compose.components.resources)
 
                 // Koin
-                api("io.insert-koin:koin-core:3.2.2")
+                api("io.insert-koin:koin-core:3.5.0")
 
                 // Ktor
-                implementation("io.ktor:ktor-client-core:2.2.1")
-                implementation("io.ktor:ktor-client-content-negotiation:2.2.1")
-                implementation("io.ktor:ktor-serialization-kotlinx-json:2.2.1")
-                implementation("io.ktor:ktor-client-json:2.2.1")
-                implementation("io.ktor:ktor-client-logging:2.2.1")
-                implementation("io.ktor:ktor-client-serialization:2.2.1")
+                implementation("io.ktor:ktor-client-core:2.3.6")
+                implementation("io.ktor:ktor-client-content-negotiation:2.3.6")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.6")
+                implementation("io.ktor:ktor-client-json:2.3.6")
+                implementation("io.ktor:ktor-client-logging:2.3.6")
+                implementation("io.ktor:ktor-client-serialization:2.3.6")
 
                 // Voyager
                 val voyagerVersion = "1.0.0-rc04"
@@ -47,12 +48,12 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                api("androidx.activity:activity-compose:1.7.2")
+                api("androidx.activity:activity-compose:1.8.2")
                 api("androidx.appcompat:appcompat:1.6.1")
-                api("androidx.core:core-ktx:1.10.1")
+                api("androidx.core:core-ktx:1.12.0")
 
-                api("io.ktor:ktor-client-android:2.2.1")
-                implementation("io.coil-kt:coil-compose:2.3.0")
+                api("io.ktor:ktor-client-android:2.3.6")
+                implementation("io.coil-kt:coil-compose:2.5.0")
             }
         }
         val iosX64Main by getting
@@ -63,10 +64,15 @@ kotlin {
             iosX64Main.dependsOn(this)
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
+            dependencies{
+                implementation("io.ktor:ktor-client-darwin:2.3.6")
+            }
         }
         val desktopMain by getting {
             dependencies {
                 implementation(compose.desktop.common)
+                api("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.7.3")
+                implementation("io.ktor:ktor-client-java:2.3.6")
             }
         }
     }
