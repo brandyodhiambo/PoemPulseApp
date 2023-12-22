@@ -2,11 +2,11 @@
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import cafe.adriel.voyager.navigator.Navigator
-import presentation.HomeScreen
+import presentation.todaypoem.TodayPoemScreen
 
 @Composable
-fun App() {
+fun PoemPulseApp() {
     MaterialTheme {
-        Navigator(HomeScreen())
+        Navigator(TodayPoemScreen())
     }
 }

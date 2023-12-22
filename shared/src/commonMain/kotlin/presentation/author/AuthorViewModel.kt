@@ -1,17 +1,17 @@
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.coroutineScope
-import domain.usecase.AuthorUseCase
+import domain.usecase.GetAuthorUseCase
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class AuthorViewModel(
-    private val authorUseCase: AuthorUseCase,
+    private val getAuthorUseCase: GetAuthorUseCase,
 ) : StateScreenModel<AuthorState>(AuthorState.Init) {
     fun getAuthors() {
         coroutineScope.launch {
             mutableState.value = AuthorState.Loading
 
-            authorUseCase.invoke().collectLatest { result ->
+            getAuthorUseCase.invoke().collectLatest { result ->
                 when (result) {
                     is NetworkResult.Error -> {
                         mutableState.value = AuthorState.Error(error = result.errorMessage ?: "Unknown Error")
@@ -33,8 +33,8 @@ class AuthorViewModel(
 }
 
 sealed class AuthorState {
-    object Init : AuthorState()
-    object Loading : AuthorState()
+    data object Init : AuthorState()
+    data object Loading : AuthorState()
 
     data class Result(val authors: List<String>) : AuthorState()
 

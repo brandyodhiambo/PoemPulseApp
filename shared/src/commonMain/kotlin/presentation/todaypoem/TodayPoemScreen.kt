@@ -1,7 +1,5 @@
-package presentation
+package presentation.todaypoem
 
-import AuthorState
-import AuthorViewModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -30,13 +28,12 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-internal class HomeScreen : Screen, KoinComponent {
-
+internal class TodayPoemScreen : Screen, KoinComponent {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
-        val authorViewModel: AuthorViewModel by inject()
-        val authorState = authorViewModel.state.collectAsState()
+        val todayPoemViewModel: TodayPoemViewModel by inject()
+        val todayPoemState = todayPoemViewModel.state.collectAsState()
 
         Scaffold(
             topBar = {
@@ -44,7 +41,7 @@ internal class HomeScreen : Screen, KoinComponent {
                     backgroundColor = MaterialTheme.colors.background,
                 ) {
                     Text(
-                        text = "Poem Pulse",
+                        text = "Today's Poem",
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp),
@@ -57,34 +54,34 @@ internal class HomeScreen : Screen, KoinComponent {
             },
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
-                when (val result = authorState.value) {
-                    is AuthorState.Init -> {}
+                when (val result = todayPoemState.value) {
+                    is TodayPoemState.Init -> {}
 
-                    is AuthorState.Loading -> {
+                    is TodayPoemState.Loading -> {
                         CircularProgressIndicator(
                             modifier = Modifier.align(Alignment.Center),
                         )
                     }
 
-                    is AuthorState.Error -> {
+                    is TodayPoemState.Error -> {
                         Text(
                             text = result.error,
                             modifier = Modifier.align(Alignment.Center),
                         )
                     }
 
-                    is AuthorState.Result -> {
+                    is TodayPoemState.Result -> {
                         LazyVerticalGrid(
-                            columns = GridCells.Fixed(4),
+                            columns = GridCells.Fixed(1),
                             contentPadding = PaddingValues(8.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
-                            items(result.authors) { author ->
+                            items(result.poems) { poem ->
                                 Text(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(4.dp),
-                                    text = author,
+                                    text = poem.lines.joinToString(),
                                     textAlign = TextAlign.Center,
                                     fontSize = 10.sp,
                                 )

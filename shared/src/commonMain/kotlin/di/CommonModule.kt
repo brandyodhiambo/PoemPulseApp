@@ -5,7 +5,8 @@ import AuthorViewModel
 import Constants.BASE_URL
 import data.repository.PoemPulseRepositoryImpl
 import domain.repository.PoemPulseRepository
-import domain.usecase.AuthorUseCase
+import domain.usecase.GetAuthorUseCase
+import domain.usecase.GetTodayPoemUseCase
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
@@ -17,6 +18,7 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.dsl.module
 import platform.httpClient
+import presentation.todaypoem.TodayPoemViewModel
 
 fun commonModule() = module {
     single {
@@ -60,10 +62,12 @@ fun commonModule() = module {
     /*
     * usecase
     * */
-    single<AuthorUseCase> { AuthorUseCase(poemPulseRepository = get()) }
+    single<GetAuthorUseCase> { GetAuthorUseCase(poemPulseRepository = get()) }
+    single<GetTodayPoemUseCase> { GetTodayPoemUseCase(poemPulseRepository = get()) }
 
     /*
     * Viewmodel
     * */
-    single<AuthorViewModel> { AuthorViewModel(authorUseCase = get()) }
+    single<AuthorViewModel> { AuthorViewModel(getAuthorUseCase = get()) }
+    single<TodayPoemViewModel> { TodayPoemViewModel(getTodayPoemUseCase = get()) }
 }
