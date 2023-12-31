@@ -27,17 +27,21 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import io.ktor.http.parametersOf
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.koin.core.parameter.parametersOf
 
-internal class AuthorScreen : Screen, KoinComponent{
-
+data class AuthorPoemScreen(
+    val authorName: String,
+) : Screen, KoinComponent {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
         val authorViewModel: AuthorViewModel by inject()
         val authorState = authorViewModel.state.collectAsState()
 
+        authorViewModel.getAuthorPoem(authorName = authorName)
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -73,21 +77,18 @@ internal class AuthorScreen : Screen, KoinComponent{
                         )
                     }
 
-                    is AuthorState.Result -> {
+                    is AuthorState.AuthorPoemResult -> {
                         LazyVerticalGrid(
-                            columns = GridCells.Fixed(4),
+                            columns = GridCells.Fixed(1),
                             contentPadding = PaddingValues(8.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
-                            items(result.authors) { author ->
+                            items(result.poem) { poems ->
                                 Text(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(4.dp)
-                                        .clickable {
-                                            navigator.push(AuthorPoemScreen(author))
-                                        },
-                                    text = author,
+                                        .padding(4.dp),
+                                    text = poems.lines.joinToString(),
                                     textAlign = TextAlign.Center,
                                     fontSize = 10.sp,
                                 )

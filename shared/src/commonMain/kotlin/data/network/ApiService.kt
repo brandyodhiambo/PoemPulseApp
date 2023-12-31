@@ -1,3 +1,4 @@
+import data.network.dto.author.AuthorPoemDto
 import data.network.dto.author.AuthorsDto
 import data.network.dto.todaypoem.TodayPoemDto
 import io.ktor.client.HttpClient
@@ -14,5 +15,9 @@ class ApiService(
 
     suspend fun getTodayPoem(dayNumber: Int): List<TodayPoemDto> {
         return httpClient.get(urlString = "/random/$dayNumber").body()
+    }
+
+    suspend fun getAuthorPoem(authorName:String):List<AuthorPoemDto>{
+        return httpClient.get(urlString = "/author/$authorName").body()
     }
 }

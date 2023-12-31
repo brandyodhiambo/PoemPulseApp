@@ -2,6 +2,7 @@ package data.repository
 
 import ApiService
 import NetworkResult
+import domain.model.author.AuthorPoem
 import domain.model.todaypoem.TodayPoem
 import domain.repository.PoemPulseRepository
 import kotlinx.coroutines.flow.Flow
@@ -23,6 +24,13 @@ class PoemPulseRepositoryImpl(
     override suspend fun getTodayPoem(dayNumber: Int): Flow<NetworkResult<List<TodayPoem>>>  = flow{
         val response = safeApiCall {
             apiService.getTodayPoem(dayNumber).map { it.toDomain() }
+        }
+        emit(response)
+    }
+
+    override suspend fun getAuthorPoem(authorName: String): Flow<NetworkResult<List<AuthorPoem>>> = flow {
+        val response = safeApiCall {
+            apiService.getAuthorPoem(authorName = authorName).map { it.toDomain() }
         }
         emit(response)
     }

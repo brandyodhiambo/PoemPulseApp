@@ -6,6 +6,7 @@ import Constants.BASE_URL
 import data.repository.PoemPulseRepositoryImpl
 import domain.repository.PoemPulseRepository
 import domain.usecase.GetAuthorUseCase
+import domain.usecase.GetAuthorPoemUseCase
 import domain.usecase.GetTodayPoemUseCase
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -64,10 +65,11 @@ fun commonModule() = module {
     * */
     single<GetAuthorUseCase> { GetAuthorUseCase(poemPulseRepository = get()) }
     single<GetTodayPoemUseCase> { GetTodayPoemUseCase(poemPulseRepository = get()) }
+    single<GetAuthorPoemUseCase>{GetAuthorPoemUseCase(poemPulseRepository = get()) }
 
     /*
     * Viewmodel
     * */
-    single<AuthorViewModel> { AuthorViewModel(getAuthorUseCase = get()) }
+    single<AuthorViewModel> { AuthorViewModel(getAuthorUseCase = get(), getAuthorPoemUseCase = get()) }
     single<TodayPoemViewModel> { TodayPoemViewModel(getTodayPoemUseCase = get()) }
 }
