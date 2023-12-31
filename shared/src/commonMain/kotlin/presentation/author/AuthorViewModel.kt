@@ -14,7 +14,7 @@ class AuthorViewModel(
     init {
         getAuthors()
     }
-    fun getAuthors() {
+    private fun getAuthors() {
         coroutineScope.launch {
             mutableState.value = AuthorState.Loading
 

@@ -7,6 +7,9 @@ import data.repository.PoemPulseRepositoryImpl
 import domain.repository.PoemPulseRepository
 import domain.usecase.GetAuthorUseCase
 import domain.usecase.GetAuthorPoemUseCase
+import domain.usecase.GetGivenWordPoemUseCase
+import domain.usecase.GetPoemTitleUseCase
+import domain.usecase.GetTitleLineUseCase
 import domain.usecase.GetTodayPoemUseCase
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -19,6 +22,8 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.dsl.module
 import platform.httpClient
+import presentation.givenwordpoem.GivenWordPoemViewModel
+import presentation.title.TitleViewModel
 import presentation.todaypoem.TodayPoemViewModel
 
 fun commonModule() = module {
@@ -66,10 +71,17 @@ fun commonModule() = module {
     single<GetAuthorUseCase> { GetAuthorUseCase(poemPulseRepository = get()) }
     single<GetTodayPoemUseCase> { GetTodayPoemUseCase(poemPulseRepository = get()) }
     single<GetAuthorPoemUseCase>{GetAuthorPoemUseCase(poemPulseRepository = get()) }
+    single<GetGivenWordPoemUseCase>{ GetGivenWordPoemUseCase(poemPulseRepository = get()) }
+    single<GetPoemTitleUseCase>{ GetPoemTitleUseCase(poemPulseRepository = get()) }
+    single<GetTitleLineUseCase>{ GetTitleLineUseCase(poemPulseRepository = get()) }
 
     /*
-    * Viewmodel
+    * View model
     * */
     single<AuthorViewModel> { AuthorViewModel(getAuthorUseCase = get(), getAuthorPoemUseCase = get()) }
     single<TodayPoemViewModel> { TodayPoemViewModel(getTodayPoemUseCase = get()) }
+    single<GivenWordPoemViewModel>{ GivenWordPoemViewModel(getGivenWordPoemUseCase = get()) }
+    single<TitleViewModel>{ TitleViewModel(getPoemTitleUseCase = get(), getTitleLineUseCase = get()) }
+
+
 }

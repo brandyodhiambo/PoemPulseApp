@@ -12,7 +12,7 @@ class TodayPoemViewModel(
     private val getTodayPoemUseCase: GetTodayPoemUseCase,
 ) : StateScreenModel<TodayPoemState>(TodayPoemState.Init) {
 
-    fun getTodayPoem() {
+    private fun getTodayPoem() {
         coroutineScope.launch {
             mutableState.value = TodayPoemState.Loading
             val randomId = (0..999).random()
