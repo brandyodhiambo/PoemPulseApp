@@ -1,9 +1,11 @@
 import data.network.dto.author.AuthorPoemDto
 import data.network.dto.givenwordpoem.GivenWordPoemDto
+import data.network.dto.title.GivenWordTitleDto
 import data.network.dto.title.TitleLineDto
 import data.network.dto.todaypoem.TodayPoemDto
 import domain.model.author.AuthorPoem
 import domain.model.givenwordpoem.GivenWordPoem
+import domain.model.title.GivenWordTitle
 import domain.model.title.TitleLine
 import domain.model.todaypoem.TodayPoem
 
@@ -32,5 +34,9 @@ fun TitleLineDto.toDomain() = TitleLine(
     author = author,
     linecount = linecount,
     lines = lines,
+    title = title
+)
+
+fun GivenWordTitleDto.toDomain() = GivenWordTitle(
     title = title
 )

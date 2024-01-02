@@ -4,6 +4,7 @@ import ApiService
 import NetworkResult
 import domain.model.author.AuthorPoem
 import domain.model.givenwordpoem.GivenWordPoem
+import domain.model.title.GivenWordTitle
 import domain.model.title.TitleLine
 import domain.model.todaypoem.TodayPoem
 import domain.repository.PoemPulseRepository
@@ -34,6 +35,14 @@ class PoemPulseRepositoryImpl(
         val response = safeApiCall {
             apiService.getTitleLines(title).map { it.toDomain() }
         }
+        emit(response)
+    }
+
+    override suspend fun getGivenWordTitle(word: String): Flow<NetworkResult<List<GivenWordTitle>>> = flow{
+        val response = safeApiCall {
+            apiService.getGivenWordTitle(word).map { it.toDomain() }
+        }
+
         emit(response)
     }
 

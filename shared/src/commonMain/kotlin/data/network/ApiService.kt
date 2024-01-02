@@ -1,6 +1,7 @@
 import data.network.dto.author.AuthorPoemDto
 import data.network.dto.author.AuthorsDto
 import data.network.dto.givenwordpoem.GivenWordPoemDto
+import data.network.dto.title.GivenWordTitleDto
 import data.network.dto.title.TitleDto
 import data.network.dto.title.TitleLineDto
 import data.network.dto.todaypoem.TodayPoemDto
@@ -22,6 +23,10 @@ class ApiService(
 
     suspend fun getTitleLines(title:String):List<TitleLineDto>{
         return httpClient.get(urlString = "/title/$title").body()
+    }
+
+    suspend fun getGivenWordTitle(word:String):List<GivenWordTitleDto>{
+        return httpClient.get(urlString = "/title/$word/title").body()
     }
     suspend fun getTodayPoem(dayNumber: Int): List<TodayPoemDto> {
         return httpClient.get(urlString = "/random/$dayNumber").body()
