@@ -3,7 +3,9 @@ package presentation.title
 import NetworkResult
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.coroutineScope
+import domain.model.title.GivenWordTitle
 import domain.model.title.TitleLine
+import domain.usecase.GetGivenWordTitleUseCase
 import domain.usecase.GetPoemTitleUseCase
 import domain.usecase.GetTitleLineUseCase
 import kotlinx.coroutines.flow.collectLatest
@@ -11,7 +13,8 @@ import kotlinx.coroutines.launch
 
 class TitleViewModel(
     private val getPoemTitleUseCase: GetPoemTitleUseCase,
-    private val getTitleLineUseCase: GetTitleLineUseCase
+    private val getTitleLineUseCase: GetTitleLineUseCase,
+    private val getGivenWordTitleUseCase: GetGivenWordTitleUseCase
 ):StateScreenModel<TitleState>(TitleState.Init) {
 
     init {
@@ -58,6 +61,26 @@ class TitleViewModel(
             }
         }
     }
+
+    fun getGivenWordTitle(word:String){
+        coroutineScope.launch {
+            mutableState.value = TitleState.Loading
+
+            getGivenWordTitleUseCase.invoke(word).collectLatest { result->
+                when(result){
+                    is NetworkResult.Error->{
+                        mutableState.value = TitleState.Error(error = result.errorMessage?:"Unknown error occurred")
+                    }
+
+                    is NetworkResult.Success->{
+                        mutableState.value = TitleState.GivenWordTitleResult(title = result.data ?: emptyList())
+                    }
+
+                    else -> {}
+                }
+            }
+        }
+    }
 }
 
 sealed class TitleState{
@@ -67,6 +90,7 @@ sealed class TitleState{
     data class Result(val title:List<String>):TitleState()
 
     data class TitleLineResult(val line:List<TitleLine>):TitleState()
+    data class GivenWordTitleResult(val title:List<GivenWordTitle>):TitleState()
 
     data class Error(val error:String):TitleState()
 }
