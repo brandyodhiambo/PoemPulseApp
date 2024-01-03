@@ -3,6 +3,7 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.20"
+    id("app.cash.sqldelight") version "2.0.1"
 }
 
 kotlin {
@@ -42,8 +43,14 @@ kotlin {
                 implementation("io.ktor:ktor-client-serialization:2.3.6")
 
                 // Voyager
-                val voyagerVersion = "1.0.0-rc04"
+                val voyagerVersion = "1.0.0-rc10"
                 implementation("cafe.adriel.voyager:voyager-navigator:$voyagerVersion")
+
+                //sql delight
+                val sqldelight = "2.0.1"
+                implementation("app.cash.sqldelight:runtime:$sqldelight")
+                implementation("app.cash.sqldelight:coroutines-extensions:$sqldelight")
+                implementation("app.cash.sqldelight:primitive-adapters:$sqldelight")
             }
         }
         val androidMain by getting {
@@ -54,6 +61,8 @@ kotlin {
 
                 api("io.ktor:ktor-client-android:2.3.6")
                 implementation("io.coil-kt:coil-compose:2.5.0")
+                implementation("app.cash.sqldelight:android-driver:2.0.1")
+
             }
         }
         val iosX64Main by getting
@@ -66,6 +75,7 @@ kotlin {
             iosSimulatorArm64Main.dependsOn(this)
             dependencies{
                 implementation("io.ktor:ktor-client-darwin:2.3.6")
+                implementation("app.cash.sqldelight:native-driver:2.0.1")
             }
         }
         val desktopMain by getting {
@@ -73,6 +83,7 @@ kotlin {
                 implementation(compose.desktop.common)
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.7.3")
                 implementation("io.ktor:ktor-client-java:2.3.6")
+                implementation("app.cash.sqldelight:sqlite-driver:2.0.1")
             }
         }
     }
@@ -80,7 +91,7 @@ kotlin {
 
 android {
     compileSdk = (findProperty("android.compileSdk") as String).toInt()
-    namespace = "com.brandyodhiambo.common"
+    namespace = "com.brandyodhiambo.poempulse"
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
@@ -95,5 +106,13 @@ android {
     }
     kotlin {
         jvmToolchain(17)
+    }
+}
+
+sqldelight {
+    databases {
+        create("PoemDatabase") {
+            packageName.set("com.brandyodhiambo.poempulse.database")
+        }
     }
 }

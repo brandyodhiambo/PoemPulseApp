@@ -1,0 +1,27 @@
+import java.lang.Integer;
+import kotlin.Int;
+
+CREATE TABLE todayPoemEntity (
+    id INTEGER AS Int NOT NULL PRIMARY KEY AUTOINCREMENT,
+    author TEXT NOT NULL,
+    linecount TEXT NOT NULL,
+    lines TEXT NOT NULL,
+    title TEXT NOT NULL
+);
+
+getAllTodayPoem:
+SELECT * FROM todayPoemEntity;
+
+deleteAllTodayPoem:
+DELETE FROM todayPoemEntity;
+
+insertTodayPoem:
+INSERT OR REPLACE
+INTO todayPoemEntity(author,linecount,lines,title)
+VALUES (?,?,?,?);
+
+getAuthorPoem:
+SELECT * FROM todayPoemEntity WHERE author = ?;
+
+getPoemOfGivenTitle:
+SELECT * FROM todayPoemEntity WHERE title = ?;

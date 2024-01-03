@@ -81,7 +81,7 @@ fun commonModule() = module {
     single<AuthorViewModel> { AuthorViewModel(getAuthorUseCase = get(), getAuthorPoemUseCase = get()) }
     single<TodayPoemViewModel> { TodayPoemViewModel(getTodayPoemUseCase = get()) }
     single<GivenWordPoemViewModel>{ GivenWordPoemViewModel(getGivenWordPoemUseCase = get()) }
-    single<TitleViewModel>{ TitleViewModel(getPoemTitleUseCase = get(), getTitleLineUseCase = get()) }
+    single<TitleViewModel>{ TitleViewModel(getPoemTitleUseCase = get(), getTitleLineUseCase = get(), getGivenWordTitleUseCase = get()) }
 
 
 }
