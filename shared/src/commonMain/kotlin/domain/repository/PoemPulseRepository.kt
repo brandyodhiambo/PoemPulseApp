@@ -1,6 +1,7 @@
 package domain.repository
 
 import NetworkResult
+import domain.model.author.Author
 import domain.model.author.AuthorPoem
 import domain.model.givenwordpoem.GivenWordPoem
 import domain.model.title.GivenWordTitle

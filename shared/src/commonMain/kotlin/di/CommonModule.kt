@@ -3,7 +3,13 @@ package di
 import ApiService
 import AuthorViewModel
 import Constants.BASE_URL
+import com.brandyodhiambo.poempulse.database.PoemDatabase
+import data.local.adapter.idAdapter
+import data.local.dao.AuthorDao
 import data.repository.PoemPulseRepositoryImpl
+import database.AuthorEntity
+import database.PoemTitleEntity
+import database.TodayPoemEntity
 import domain.repository.PoemPulseRepository
 import domain.usecase.GetAuthorUseCase
 import domain.usecase.GetAuthorPoemUseCase
@@ -21,12 +27,16 @@ import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.dsl.module
+import platform.DatabaseDriverFactory
 import platform.httpClient
 import presentation.givenwordpoem.GivenWordPoemViewModel
 import presentation.title.TitleViewModel
 import presentation.todaypoem.TodayPoemViewModel
 
 fun commonModule() = module {
+    /*
+    * http client
+    * */
     single {
         httpClient {
             defaultRequest {
@@ -55,15 +65,38 @@ fun commonModule() = module {
     }
 
     /*
+    * database
+    * */
+    single<PoemDatabase>{
+        PoemDatabase(
+            driver = get<DatabaseDriverFactory>().createDriver(),
+            authorEntityAdapter = AuthorEntity.Adapter(
+                idAdapter = idAdapter,
+            ),
+            poemTitleEntityAdapter = PoemTitleEntity.Adapter(
+                idAdapter = idAdapter
+            ),
+            todayPoemEntityAdapter = TodayPoemEntity.Adapter(
+                idAdapter = idAdapter
+            )
+
+        )
+    }
+
+    /*
     * Api Service
     * */
     single { ApiService(httpClient = get()) }
 
     /*
+    * Dao
+    * */
+    single{ AuthorDao(poemDatabase = get())}
+
+    /*
     * Repository
     * */
-
-    single<PoemPulseRepository> { PoemPulseRepositoryImpl(apiService = get()) }
+    single<PoemPulseRepository> { PoemPulseRepositoryImpl(apiService = get(), authorDao = get()) }
 
     /*
     * usecase

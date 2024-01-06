@@ -2,6 +2,11 @@ package data.repository
 
 import ApiService
 import NetworkResult
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
+import com.brandyodhiambo.poempulse.database.PoemDatabase
+import data.local.dao.AuthorDao
+import domain.model.author.Author
 import domain.model.author.AuthorPoem
 import domain.model.givenwordpoem.GivenWordPoem
 import domain.model.title.GivenWordTitle
@@ -10,16 +15,29 @@ import domain.model.todaypoem.TodayPoem
 import domain.repository.PoemPulseRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import safeApiCall
+import toAuthorEntity
 import toDomain
 
 class PoemPulseRepositoryImpl(
+    private val authorDao: AuthorDao,
     private val apiService: ApiService,
 ) : PoemPulseRepository {
-    override suspend fun getAuthor(): Flow<NetworkResult<List<String>>> = flow {
+
+    override suspend fun getAuthor(): Flow<NetworkResult<List<String>>> = flow{
         val response = safeApiCall {
-            apiService.getAuthors().authors
+            val cachedAuthor = authorDao.getAuthor()
+
+            if(cachedAuthor.isEmpty()){
+                val response = apiService.getAuthors()
+                response.authors.forEach { name->
+                    val author = Author(
+                        name = name
+                    )
+                    authorDao.insertAuthor(author.toAuthorEntity())
+                }
+            }
+            authorDao.getAuthor().map { it.name }
         }
         emit(response)
     }

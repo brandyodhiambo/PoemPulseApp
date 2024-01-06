@@ -1,5 +1,6 @@
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.coroutineScope
+import domain.model.author.Author
 import domain.model.author.AuthorPoem
 import domain.usecase.GetAuthorPoemUseCase
 import domain.usecase.GetAuthorUseCase
@@ -17,7 +18,6 @@ class AuthorViewModel(
     private fun getAuthors() {
         coroutineScope.launch {
             mutableState.value = AuthorState.Loading
-
             getAuthorUseCase.invoke().collectLatest { result ->
                 when (result) {
                     is NetworkResult.Error -> {
