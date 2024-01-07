@@ -6,10 +6,13 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import com.brandyodhiambo.poempulse.database.PoemDatabase
 import data.local.dao.AuthorDao
+import data.local.dao.TitleDao
+import data.local.dao.TodayPoemDao
 import domain.model.author.Author
 import domain.model.author.AuthorPoem
 import domain.model.givenwordpoem.GivenWordPoem
 import domain.model.title.GivenWordTitle
+import domain.model.title.Title
 import domain.model.title.TitleLine
 import domain.model.todaypoem.TodayPoem
 import domain.repository.PoemPulseRepository
@@ -18,9 +21,13 @@ import kotlinx.coroutines.flow.flow
 import safeApiCall
 import toAuthorEntity
 import toDomain
+import toTitleEntity
+import toTodayPoemEntity
 
 class PoemPulseRepositoryImpl(
     private val authorDao: AuthorDao,
+    private val titleDao: TitleDao,
+    private val todayPoemDao: TodayPoemDao,
     private val apiService: ApiService,
 ) : PoemPulseRepository {
 
@@ -29,8 +36,8 @@ class PoemPulseRepositoryImpl(
             val cachedAuthor = authorDao.getAuthor()
 
             if(cachedAuthor.isEmpty()){
-                val response = apiService.getAuthors()
-                response.authors.forEach { name->
+                val apiAuthor = apiService.getAuthors()
+                apiAuthor.authors.forEach { name->
                     val author = Author(
                         name = name
                     )
@@ -44,7 +51,18 @@ class PoemPulseRepositoryImpl(
 
     override suspend fun getTitle(): Flow<NetworkResult<List<String>>> = flow {
         val response = safeApiCall {
-            apiService.getTitles().titles
+            val cachedTitle = titleDao.getPoemTitle()
+
+            if(cachedTitle.isEmpty()){
+                val apiTitle =  apiService.getTitles()
+                apiTitle.titles.forEach {
+                    val title = Title(
+                        title = it
+                    )
+                    titleDao.insertPoemTitle(title.toTitleEntity())
+                }
+            }
+            titleDao.getPoemTitle().map { it.title }
         }
         emit(response)
     }
@@ -66,7 +84,15 @@ class PoemPulseRepositoryImpl(
 
     override suspend fun getTodayPoem(dayNumber: Int): Flow<NetworkResult<List<TodayPoem>>>  = flow{
         val response = safeApiCall {
-            apiService.getTodayPoem(dayNumber).map { it.toDomain() }
+            val cachedTodayPoem = todayPoemDao.getTodayPoem()
+
+            if(cachedTodayPoem.isEmpty()){
+                val apiTodayPoem = apiService.getTodayPoem(dayNumber).map { it.toDomain() }
+                apiTodayPoem.forEach {
+                    todayPoemDao.insertTodayPoem(it.toTodayPoemEntity())
+                }
+            }
+            todayPoemDao.getTodayPoem().map { it.toDomain() }
         }
         emit(response)
     }

@@ -6,6 +6,8 @@ import Constants.BASE_URL
 import com.brandyodhiambo.poempulse.database.PoemDatabase
 import data.local.adapter.idAdapter
 import data.local.dao.AuthorDao
+import data.local.dao.TitleDao
+import data.local.dao.TodayPoemDao
 import data.repository.PoemPulseRepositoryImpl
 import database.AuthorEntity
 import database.PoemTitleEntity
@@ -92,11 +94,18 @@ fun commonModule() = module {
     * Dao
     * */
     single{ AuthorDao(poemDatabase = get())}
+    single{TitleDao(poemDatabase = get())}
+    single{TodayPoemDao(poemDatabase = get())}
 
     /*
     * Repository
     * */
-    single<PoemPulseRepository> { PoemPulseRepositoryImpl(apiService = get(), authorDao = get()) }
+    single<PoemPulseRepository> { PoemPulseRepositoryImpl(
+        apiService = get(),
+        authorDao = get(),
+        titleDao = get(),
+        todayPoemDao = get()
+    ) }
 
     /*
     * usecase

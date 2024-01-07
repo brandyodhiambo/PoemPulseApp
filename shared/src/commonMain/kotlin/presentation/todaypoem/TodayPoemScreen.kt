@@ -81,7 +81,7 @@ internal class TodayPoemScreen : Screen, KoinComponent {
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(4.dp),
-                                    text = poem.lines.joinToString(),
+                                    text = poem.lines,
                                     textAlign = TextAlign.Center,
                                     fontSize = 10.sp,
                                 )

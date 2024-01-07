@@ -8,6 +8,6 @@ import presentation.todaypoem.TodayPoemScreen
 @Composable
 fun PoemPulseApp() {
     MaterialTheme {
-        Navigator(AuthorScreen())
+        Navigator(TodayPoemScreen())
     }
 }
