@@ -19,9 +19,3 @@ insertTodayPoem:
 INSERT OR REPLACE
 INTO todayPoemEntity(author,linecount,lines,title)
 VALUES (?,?,?,?);
-
-getAuthorPoem:
-SELECT * FROM todayPoemEntity WHERE author = ?;
-
-getPoemOfGivenTitle:
-SELECT * FROM todayPoemEntity WHERE title = ?;

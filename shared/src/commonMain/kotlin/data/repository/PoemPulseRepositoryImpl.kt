@@ -43,6 +43,15 @@ class PoemPulseRepositoryImpl(
                     )
                     authorDao.insertAuthor(author.toAuthorEntity())
                 }
+            } else{
+                authorDao.deleteAuthor()
+                val apiAuthor = apiService.getAuthors()
+                apiAuthor.authors.forEach { name->
+                    val author = Author(
+                        name = name
+                    )
+                    authorDao.insertAuthor(author.toAuthorEntity())
+                }
             }
             authorDao.getAuthor().map { it.name }
         }
@@ -54,6 +63,15 @@ class PoemPulseRepositoryImpl(
             val cachedTitle = titleDao.getPoemTitle()
 
             if(cachedTitle.isEmpty()){
+                val apiTitle =  apiService.getTitles()
+                apiTitle.titles.forEach {
+                    val title = Title(
+                        title = it
+                    )
+                    titleDao.insertPoemTitle(title.toTitleEntity())
+                }
+            } else{
+                titleDao.deletePoemTitle()
                 val apiTitle =  apiService.getTitles()
                 apiTitle.titles.forEach {
                     val title = Title(
@@ -87,6 +105,12 @@ class PoemPulseRepositoryImpl(
             val cachedTodayPoem = todayPoemDao.getTodayPoem()
 
             if(cachedTodayPoem.isEmpty()){
+                val apiTodayPoem = apiService.getTodayPoem(dayNumber).map { it.toDomain() }
+                apiTodayPoem.forEach {
+                    todayPoemDao.insertTodayPoem(it.toTodayPoemEntity())
+                }
+            } else{
+                todayPoemDao.deleteTodayPoem()
                 val apiTodayPoem = apiService.getTodayPoem(dayNumber).map { it.toDomain() }
                 apiTodayPoem.forEach {
                     todayPoemDao.insertTodayPoem(it.toTodayPoemEntity())

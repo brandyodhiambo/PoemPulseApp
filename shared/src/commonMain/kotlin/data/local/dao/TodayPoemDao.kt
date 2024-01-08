@@ -24,4 +24,8 @@ class TodayPoemDao(
             todayPoemEntity.title
         )
     }
+
+    suspend fun deleteTodayPoem() = withContext(Dispatchers.IO){
+        dbQuery.deleteAllTodayPoem()
+    }
 }
