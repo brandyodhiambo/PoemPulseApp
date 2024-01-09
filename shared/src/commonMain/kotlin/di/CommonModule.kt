@@ -8,11 +8,14 @@ import data.local.adapter.idAdapter
 import data.local.dao.AuthorDao
 import data.local.dao.TitleDao
 import data.local.dao.TodayPoemDao
+import data.local.setting.PreferenceManager
 import data.repository.PoemPulseRepositoryImpl
+import data.repository.SettingRepositoryImpl
 import database.AuthorEntity
 import database.PoemTitleEntity
 import database.TodayPoemEntity
 import domain.repository.PoemPulseRepository
+import domain.repository.SettingRepository
 import domain.usecase.GetAuthorUseCase
 import domain.usecase.GetAuthorPoemUseCase
 import domain.usecase.GetGivenWordPoemUseCase
@@ -32,6 +35,7 @@ import org.koin.dsl.module
 import platform.DatabaseDriverFactory
 import platform.httpClient
 import presentation.givenwordpoem.GivenWordPoemViewModel
+import presentation.main.MainViewModel
 import presentation.title.TitleViewModel
 import presentation.todaypoem.TodayPoemViewModel
 
@@ -86,6 +90,19 @@ fun commonModule() = module {
     }
 
     /*
+    * settings
+    * */
+    single<PreferenceManager>{
+        PreferenceManager(settings = get())
+    }
+
+    single<SettingRepository>{
+        SettingRepositoryImpl(
+            preferenceManager = get()
+        )
+    }
+
+    /*
     * Api Service
     * */
     single { ApiService(httpClient = get()) }
@@ -124,6 +141,11 @@ fun commonModule() = module {
     single<TodayPoemViewModel> { TodayPoemViewModel(getTodayPoemUseCase = get()) }
     single<GivenWordPoemViewModel>{ GivenWordPoemViewModel(getGivenWordPoemUseCase = get()) }
     single<TitleViewModel>{ TitleViewModel(getPoemTitleUseCase = get(), getTitleLineUseCase = get(), getGivenWordTitleUseCase = get()) }
+    single<MainViewModel> {
+        MainViewModel(
+            settingRepository = get(),
+        )
+    }
 
 
 }

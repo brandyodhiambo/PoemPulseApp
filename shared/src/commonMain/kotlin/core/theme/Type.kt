@@ -13,7 +13,7 @@ import platform.font
 internal fun getTypography(): Typography {
     val playfairRegular =
         font(
-            "PlayFairDisplay",
+            "Playfair Display",
             "playfair_display_regular",
             FontWeight.Normal,
             FontStyle.Normal,
@@ -21,7 +21,7 @@ internal fun getTypography(): Typography {
 
     val playfairBold =
         font(
-            "PlayFairDisplay",
+            "Playfair Display",
             "playfair_display_bold",
             FontWeight.Bold,
             FontStyle.Normal,
@@ -29,7 +29,7 @@ internal fun getTypography(): Typography {
 
     val playfairBoldItalic =
         font(
-            "PlayFairDisplay",
+            "Playfair Display",
             "playfair_display_bold_italic",
             FontWeight.Bold,
             FontStyle.Italic,
@@ -37,7 +37,7 @@ internal fun getTypography(): Typography {
 
     val playfairSemiBold =
         font(
-            "PlayFairDisplay",
+            "Playfair Display",
             "playfair_display_semi_bold",
             FontWeight.SemiBold,
             FontStyle.Normal,
@@ -45,7 +45,7 @@ internal fun getTypography(): Typography {
 
     val playfairSemiBoldItalic =
         font(
-            "PlayFairDisplay",
+            "Playfair Display",
             "playfair_display_semi_bold_italic",
             FontWeight.SemiBold,
             FontStyle.Italic,
@@ -53,7 +53,7 @@ internal fun getTypography(): Typography {
 
     val playfairExtraBold =
         font(
-            "PlayFairDisplay",
+            "Playfair Display",
             "playfair_display_extrabold",
             FontWeight.ExtraBold,
             FontStyle.Normal,
@@ -61,7 +61,7 @@ internal fun getTypography(): Typography {
 
     val playfairExtraBoldItalic =
         font(
-            "PlayFairDisplay",
+            "Playfair Display",
             "playfair_display_extra_bold_italic",
             FontWeight.ExtraBold,
             FontStyle.Italic,
@@ -69,7 +69,7 @@ internal fun getTypography(): Typography {
 
     val playfairMedium =
         font(
-            "PlayFairDisplay",
+            "Playfair Display",
             "playfair_display_medium",
             FontWeight.Medium,
             FontStyle.Normal,
@@ -77,7 +77,7 @@ internal fun getTypography(): Typography {
 
     val playfairMediumItalic =
         font(
-            "PlayFairDisplay",
+            "Playfair Display",
             "playfair_display_medium_italic",
             FontWeight.Medium,
             FontStyle.Italic,
@@ -85,7 +85,7 @@ internal fun getTypography(): Typography {
 
     val playfairBlack =
         font(
-            "PlayFairDisplay",
+            "Playfair Display",
             "playfair_display_black",
             FontWeight.Black,
             FontStyle.Normal,
@@ -93,7 +93,7 @@ internal fun getTypography(): Typography {
 
     val playfairBlackItalic =
         font(
-            "PlayFairDisplay",
+            "Playfair Display",
             "playfair_display_black_italic",
             FontWeight.Black,
             FontStyle.Italic,

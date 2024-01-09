@@ -34,6 +34,7 @@ kotlin {
 
                 // Koin
                 api("io.insert-koin:koin-core:3.5.0")
+                api("io.insert-koin:koin-compose:1.1.0")
 
                 // Ktor
                 implementation("io.ktor:ktor-client-core:2.3.6")
@@ -46,12 +47,23 @@ kotlin {
                 // Voyager
                 val voyagerVersion = "1.0.0-rc10"
                 implementation("cafe.adriel.voyager:voyager-navigator:$voyagerVersion")
+                implementation("cafe.adriel.voyager:voyager-bottom-sheet-navigator:$voyagerVersion")
+                implementation("cafe.adriel.voyager:voyager-tab-navigator:$voyagerVersion")
+                implementation("cafe.adriel.voyager:voyager-transitions:$voyagerVersion")
 
                 //sql delight
                 val sqldelight = "2.0.1"
                 implementation("app.cash.sqldelight:runtime:$sqldelight")
                 implementation("app.cash.sqldelight:coroutines-extensions:$sqldelight")
                 implementation("app.cash.sqldelight:primitive-adapters:$sqldelight")
+
+                // multiplatform settings
+                val multiplatformsetting = "1.1.1"
+                api("com.russhwolf:multiplatform-settings-no-arg:$multiplatformsetting")
+                api("com.russhwolf:multiplatform-settings-coroutines:$multiplatformsetting")
+
+                // window size
+                implementation("dev.chrisbanes.material3:material3-window-size-class-multiplatform:0.3.1")
             }
         }
         val androidMain by getting {
@@ -63,6 +75,7 @@ kotlin {
                 api("io.ktor:ktor-client-android:2.3.6")
                 implementation("io.coil-kt:coil-compose:2.5.0")
                 implementation("app.cash.sqldelight:android-driver:2.0.1")
+                implementation("com.google.accompanist:accompanist-systemuicontroller:0.32.0")
 
             }
         }

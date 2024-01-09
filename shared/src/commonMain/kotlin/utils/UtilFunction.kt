@@ -1,6 +1,14 @@
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.staticCompositionLocalOf
+import cafe.adriel.voyager.navigator.Navigator
+import cafe.adriel.voyager.navigator.tab.Tab
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.RedirectResponseException
 import io.ktor.client.plugins.ServerResponseException
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 
 suspend fun <T : Any> safeApiCall(apiCall: suspend () -> T): NetworkResult<T> {
     return try {
@@ -29,4 +37,22 @@ suspend fun <T : Any> safeApiCall(apiCall: suspend () -> T): NetworkResult<T> {
             errorMessage = e.message ?: "An unknown error occurred",
         )
     }
+}
+
+val LocalAppNavigator: ProvidableCompositionLocal<Navigator?> = staticCompositionLocalOf { null }
+
+@Composable
+fun ProvideAppNavigator(navigator: Navigator, content: @Composable () -> Unit) {
+    CompositionLocalProvider(LocalAppNavigator provides navigator) {
+        content()
+    }
+}
+
+@Composable
+@OptIn(ExperimentalResourceApi::class)
+fun FilledIcon(item: Tab) = when (item.options.index) {
+    (0u).toUShort() -> painterResource("home_filled.xml")
+    (1u).toUShort() -> painterResource("author_filled.xml")
+    (2u).toUShort() -> painterResource("title_filled.xml")
+    else -> painterResource("home_filled.xml")
 }
