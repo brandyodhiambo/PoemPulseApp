@@ -1,63 +1,68 @@
 package presentation.author
 
 import AuthorViewModel
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import io.ktor.http.parametersOf
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-import org.koin.core.parameter.parametersOf
+import org.koin.compose.koinInject
+import platform.StatusBarColors
 
-data class AuthorPoemScreen(
-    val authorName: String,
-) : Screen, KoinComponent {
+class AuthorPoemScreen(val author:String) : Screen {
     @Composable
     override fun Content() {
+        AuthorPoemScreenContent(
+            authorName = author
+        )
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun AuthorPoemScreenContent(
+        authorName: String,
+        authorViewModel: AuthorViewModel = koinInject()
+    ) {
+        StatusBarColors(
+            statusBarColor = MaterialTheme.colorScheme.background,
+            navBarColor = MaterialTheme.colorScheme.background,
+        )
+
         val navigator = LocalNavigator.currentOrThrow
-        val authorViewModel: AuthorViewModel by inject()
         val authorState = authorViewModel.state.collectAsState()
 
         authorViewModel.getAuthorPoem(authorName = authorName)
         Scaffold(
             topBar = {
                 TopAppBar(
-                    backgroundColor = MaterialTheme.colors.background,
-                ) {
-                    Text(
-                        text = "Poem Pulse",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        textAlign = TextAlign.Center,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colors.onBackground,
-                    )
-                }
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background
+                    ) ,
+                    title = {
+                        Text(
+                            text = "Author's Poem",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onBackground,
+                        )
+                    }
+                )
             },
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
@@ -85,12 +90,9 @@ data class AuthorPoemScreen(
                         ) {
                             items(result.poem) { poems ->
                                 Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(4.dp),
-                                    text = poems.lines.joinToString(),
-                                    textAlign = TextAlign.Center,
-                                    fontSize = 10.sp,
+                                    text = poems.lines.joinToString(","),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.onBackground,
                                 )
                             }
                         }
@@ -100,5 +102,7 @@ data class AuthorPoemScreen(
                 }
             }
         }
+
     }
+
 }

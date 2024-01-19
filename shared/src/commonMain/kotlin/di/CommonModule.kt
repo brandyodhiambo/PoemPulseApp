@@ -19,6 +19,7 @@ import domain.repository.SettingRepository
 import domain.usecase.GetAuthorUseCase
 import domain.usecase.GetAuthorPoemUseCase
 import domain.usecase.GetGivenWordPoemUseCase
+import domain.usecase.GetGivenWordTitleUseCase
 import domain.usecase.GetPoemTitleUseCase
 import domain.usecase.GetTitleLineUseCase
 import domain.usecase.GetTodayPoemUseCase
@@ -133,6 +134,7 @@ fun commonModule() = module {
     single<GetGivenWordPoemUseCase>{ GetGivenWordPoemUseCase(poemPulseRepository = get()) }
     single<GetPoemTitleUseCase>{ GetPoemTitleUseCase(poemPulseRepository = get()) }
     single<GetTitleLineUseCase>{ GetTitleLineUseCase(poemPulseRepository = get()) }
+    single<GetGivenWordTitleUseCase>{ GetGivenWordTitleUseCase(poemPulseRepository = get()) }
 
     /*
     * View model

@@ -8,6 +8,7 @@ import core.theme.PoemPulseTheme
 import presentation.main.MainViewModel
 import org.koin.compose.koinInject
 import platform.StatusBarColors
+import presentation.LandingScreen
 import presentation.main.MainScreen
 
 
@@ -28,7 +29,7 @@ fun PoemPulseApp(
             navBarColor = MaterialTheme.colorScheme.background,
         )
         Navigator(
-            screen = MainScreen(),
+            screen = LandingScreen(),
             content = { navigator ->
                 ProvideAppNavigator(
                     navigator = navigator,

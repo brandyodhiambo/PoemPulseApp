@@ -15,7 +15,7 @@ class TodayPoemViewModel(
     private fun getTodayPoem() {
         coroutineScope.launch {
             mutableState.value = TodayPoemState.Loading
-            val randomId = (0..999).random()
+            val randomId = (0..10).random()
             getTodayPoemUseCase.invoke(randomId).collectLatest { result ->
                 when (result) {
                     is NetworkResult.Error -> {

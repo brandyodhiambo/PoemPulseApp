@@ -75,7 +75,7 @@ fun TodayPoemScreen(
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(1),
                         contentPadding = PaddingValues(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
                         items(result.poems) { poem ->
                             Text(

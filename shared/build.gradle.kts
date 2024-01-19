@@ -64,6 +64,9 @@ kotlin {
 
                 // window size
                 implementation("dev.chrisbanes.material3:material3-window-size-class-multiplatform:0.3.1")
+
+                //Kottie animation
+                implementation("io.github.ismai117:kottie:1.3.1")
             }
         }
         val androidMain by getting {
@@ -108,7 +111,7 @@ android {
     namespace = "com.brandyodhiambo.poempulse"
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    sourceSets["main"].res.srcDirs("src/androidMain/res")
+    sourceSets["main"].res.srcDirs("src/commonMain/resources")
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
     defaultConfig {

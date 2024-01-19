@@ -11,204 +11,160 @@ import platform.font
 
 @Composable
 internal fun getTypography(): Typography {
-    val playfairRegular =
+    val quattrocentoRegular =
         font(
-            "Playfair Display",
-            "playfair_display_regular",
+            "quattrocento",
+            "quattrocento_regular",
             FontWeight.Normal,
             FontStyle.Normal,
         )
 
-    val playfairBold =
+    val quattrocentoBold =
         font(
-            "Playfair Display",
-            "playfair_display_bold",
+            "quattrocento",
+            "quattrocento_bold",
             FontWeight.Bold,
             FontStyle.Normal,
         )
 
-    val playfairBoldItalic =
+    val quattrocentoSemiBold =
         font(
-            "Playfair Display",
-            "playfair_display_bold_italic",
-            FontWeight.Bold,
-            FontStyle.Italic,
-        )
-
-    val playfairSemiBold =
-        font(
-            "Playfair Display",
-            "playfair_display_semi_bold",
+            "quattrocento",
+            "quattrocento_bold",
             FontWeight.SemiBold,
             FontStyle.Normal,
         )
 
-    val playfairSemiBoldItalic =
+    val quattrocentoExtraBold =
         font(
-            "Playfair Display",
-            "playfair_display_semi_bold_italic",
-            FontWeight.SemiBold,
-            FontStyle.Italic,
-        )
-
-    val playfairExtraBold =
-        font(
-            "Playfair Display",
-            "playfair_display_extrabold",
+            "quattrocento",
+            "quattrocento_bold",
             FontWeight.ExtraBold,
             FontStyle.Normal,
         )
 
-    val playfairExtraBoldItalic =
+    val quattrocentoMedium =
         font(
-            "Playfair Display",
-            "playfair_display_extra_bold_italic",
-            FontWeight.ExtraBold,
-            FontStyle.Italic,
-        )
-
-    val playfairMedium =
-        font(
-            "Playfair Display",
-            "playfair_display_medium",
+            "quattrocento",
+            "quattrocento_regular",
             FontWeight.Medium,
             FontStyle.Normal,
         )
 
-    val playfairMediumItalic =
+    val quattrocentoBlack =
         font(
-            "Playfair Display",
-            "playfair_display_medium_italic",
-            FontWeight.Medium,
-            FontStyle.Italic,
-        )
-
-    val playfairBlack =
-        font(
-            "Playfair Display",
-            "playfair_display_black",
+            "quattrocento",
+            "quattrocento_bold",
             FontWeight.Black,
             FontStyle.Normal,
         )
 
-    val playfairBlackItalic =
-        font(
-            "Playfair Display",
-            "playfair_display_black_italic",
-            FontWeight.Black,
-            FontStyle.Italic,
-        )
 
     @Composable
-    fun playfairDisplay() = FontFamily(
-        playfairRegular,
-        playfairBlack,
-        playfairBlackItalic,
-        playfairBold,
-        playfairBoldItalic,
-        playfairMedium,
-        playfairMediumItalic,
-        playfairSemiBold,
-        playfairSemiBoldItalic,
-        playfairExtraBold,
-        playfairExtraBoldItalic
+    fun quattrocentoDisplay() = FontFamily(
+        quattrocentoRegular,
+        quattrocentoBlack,
+        quattrocentoBold,
+        quattrocentoMedium,
+        quattrocentoSemiBold,
+        quattrocentoExtraBold,
     )
 
     return Typography(
         displayLarge = TextStyle(
-            fontFamily = playfairDisplay(),
+            fontFamily = quattrocentoDisplay(),
             fontWeight = FontWeight.W400,
             fontSize = 50.sp,
             // lineHeight = 64.sp,
             // letterSpacing = (-0.25).sp,
         ),
         displayMedium = TextStyle(
-            fontFamily = playfairDisplay(),
+            fontFamily = quattrocentoDisplay(),
             fontWeight = FontWeight.W400,
             fontSize = 40.sp,
             // lineHeight = 52.sp,
         ),
         displaySmall = TextStyle(
-            fontFamily = playfairDisplay(),
+            fontFamily = quattrocentoDisplay(),
             fontWeight = FontWeight.W400,
             fontSize = 30.sp,
             // lineHeight = 44.sp,
         ),
         headlineLarge = TextStyle(
-            fontFamily = playfairDisplay(),
+            fontFamily = quattrocentoDisplay(),
             fontWeight = FontWeight.W400,
             fontSize = 28.sp,
             // lineHeight = 40.sp,
         ),
         headlineMedium = TextStyle(
-            fontFamily = playfairDisplay(),
+            fontFamily = quattrocentoDisplay(),
             fontWeight = FontWeight.W400,
             fontSize = 24.sp,
             // lineHeight = 36.sp,
         ),
         headlineSmall = TextStyle(
-            fontFamily = playfairDisplay(),
-            fontWeight = FontWeight.W400,
+            fontFamily = quattrocentoDisplay(),
+            //fontWeight = FontWeight.W400,
             fontSize = 20.sp,
             // lineHeight = 32.sp,
         ),
         titleLarge = TextStyle(
-            fontFamily = playfairDisplay(),
+           fontFamily = quattrocentoDisplay(),
             fontWeight = FontWeight.W700,
             fontSize = 18.sp,
             // lineHeight = 28.sp,
         ),
         titleMedium = TextStyle(
-            fontFamily = playfairDisplay(),
+          fontFamily = quattrocentoDisplay(),
             fontWeight = FontWeight.W700,
             fontSize = 14.sp,
             // lineHeight = 24.sp,
             // letterSpacing = 0.1.sp,
         ),
         titleSmall = TextStyle(
-            fontFamily = playfairDisplay(),
+            fontFamily = quattrocentoDisplay(),
             fontWeight = FontWeight.W500,
             fontSize = 12.sp,
             // lineHeight = 20.sp,
             // letterSpacing = 0.1.sp,
         ),
         bodyLarge = TextStyle(
-            fontFamily = playfairDisplay(),
+            fontFamily = quattrocentoDisplay(),
             fontWeight = FontWeight.W400,
             fontSize = 14.sp,
             // lineHeight = 24.sp,
             // letterSpacing = 0.5.sp,
         ),
         bodyMedium = TextStyle(
-            fontFamily = playfairDisplay(),
+           fontFamily = quattrocentoDisplay(),
             fontWeight = FontWeight.W400,
             fontSize = 12.sp,
             // lineHeight = 20.sp,
             // letterSpacing = 0.25.sp,
         ),
         bodySmall = TextStyle(
-            fontFamily = playfairDisplay(),
+            fontFamily = quattrocentoDisplay(),
             fontWeight = FontWeight.W400,
             fontSize = 11.sp,
             // lineHeight = 16.sp,
             // letterSpacing = 0.4.sp,
         ),
         labelLarge = TextStyle(
-            fontFamily = playfairDisplay(),
+            fontFamily = quattrocentoDisplay(),
             fontWeight = FontWeight.W400,
             fontSize = 13.sp,
             // lineHeight = 20.sp,
             // letterSpacing = 0.1.sp,
         ),
         labelMedium = TextStyle(
-            fontFamily = playfairDisplay(),
+            fontFamily = quattrocentoDisplay(),
             fontWeight = FontWeight.W400,
             fontSize = 11.sp,
             // lineHeight = 16.sp,
             // letterSpacing = 0.5.sp,
         ),
         labelSmall = TextStyle(
-            fontFamily = playfairDisplay(),
+            fontFamily = quattrocentoDisplay(),
             fontWeight = FontWeight.W500,
             fontSize = 9.sp,
             // lineHeight = 16.sp,
