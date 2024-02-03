@@ -1,5 +1,6 @@
 package presentation.author
 
+import AuthorState
 import AuthorViewModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,22 +25,15 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import org.koin.compose.koinInject
+import org.koin.compose.rememberKoinInject
+import org.koin.core.component.KoinComponent
 import platform.StatusBarColors
 
-class AuthorPoemScreen(val author:String) : Screen {
+data class AuthorPoemScreen(val author:String) : Screen,KoinComponent {
+
     @Composable
     override fun Content() {
-        AuthorPoemScreenContent(
-            authorName = author
-        )
-    }
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun AuthorPoemScreenContent(
-        authorName: String,
-        authorViewModel: AuthorViewModel = koinInject()
-    ) {
+        val authorViewModel = rememberKoinInject<AuthorViewModel>()
         StatusBarColors(
             statusBarColor = MaterialTheme.colorScheme.background,
             navBarColor = MaterialTheme.colorScheme.background,
@@ -48,61 +42,72 @@ class AuthorPoemScreen(val author:String) : Screen {
         val navigator = LocalNavigator.currentOrThrow
         val authorState = authorViewModel.state.collectAsState()
 
-        authorViewModel.getAuthorPoem(authorName = authorName)
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background
-                    ) ,
-                    title = {
-                        Text(
-                            text = "Author's Poem",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onBackground,
-                        )
-                    }
-                )
-            },
-        ) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                when (val result = authorState.value) {
-                    is AuthorState.Init -> {}
+        authorViewModel.getAuthorPoem(authorName = author)
 
-                    is AuthorState.Loading -> {
-                        CircularProgressIndicator(
-                            modifier = Modifier.align(Alignment.Center),
-                        )
-                    }
+        AuthorPoemScreenContent(
+            authorState = authorState.value
+        )
+    }
+}
 
-                    is AuthorState.Error -> {
-                        Text(
-                            text = result.error,
-                            modifier = Modifier.align(Alignment.Center),
-                        )
-                    }
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AuthorPoemScreenContent(
+    authorState:AuthorState
+) {
 
-                    is AuthorState.AuthorPoemResult -> {
-                        LazyVerticalGrid(
-                            columns = GridCells.Fixed(1),
-                            contentPadding = PaddingValues(8.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                        ) {
-                            items(result.poem) { poems ->
-                                Text(
-                                    text = poems.lines.joinToString(","),
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                )
-                            }
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                ) ,
+                title = {
+                    Text(
+                        text = "Author's Poem",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onBackground,
+                    )
+                }
+            )
+        },
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            when (val result = authorState) {
+                is AuthorState.Init -> {}
+
+                is AuthorState.Loading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center),
+                    )
+                }
+
+                is AuthorState.Error -> {
+                    Text(
+                        text = result.error,
+                        modifier = Modifier.align(Alignment.Center),
+                    )
+                }
+
+                is AuthorState.AuthorPoemResult -> {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(1),
+                        contentPadding = PaddingValues(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        items(result.poem) { poems ->
+                            Text(
+                                text = poems.lines.joinToString(","),
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onBackground,
+                            )
                         }
                     }
-
-                    else -> {}
                 }
+
+                else -> {}
             }
         }
-
     }
 
 }

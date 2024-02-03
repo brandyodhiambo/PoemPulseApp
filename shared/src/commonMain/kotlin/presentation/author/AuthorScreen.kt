@@ -1,6 +1,7 @@
 package presentation.author
 
 import AuthorViewModel
+import LocalAppNavigator
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,7 +41,7 @@ fun AuthorScreen(
         navBarColor = MaterialTheme.colorScheme.background,
     )
 
-    val navigator = LocalNavigator.currentOrThrow
+    val navigator = LocalAppNavigator.currentOrThrow
     val authorState = authorViewModel.state.collectAsState()
 
     Scaffold(
@@ -83,13 +84,12 @@ fun AuthorScreen(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         items(result.authors) { author ->
-                           // val authorPoemScreen = rememberScreen(Screens.AuthorPoemScreen(authorName = author))
                             Text(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(4.dp)
                                     .clickable {
-                                       // navigator.push(authorPoemScreen)
+                                       navigator.push(AuthorPoemScreen(author))
                                     },
                                 text = author,
                                 style = MaterialTheme.typography.bodyMedium,

@@ -5,6 +5,7 @@ import androidx.compose.runtime.collectAsState
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
 import core.theme.PoemPulseTheme
+import org.koin.compose.KoinContext
 import presentation.main.MainViewModel
 import org.koin.compose.koinInject
 import platform.StatusBarColors
@@ -21,21 +22,23 @@ fun PoemPulseApp(
         else->false
     }
 
-    PoemPulseTheme(
-        useDarkTheme = darkTheme
-    ){
-        StatusBarColors(
-            statusBarColor = MaterialTheme.colorScheme.background,
-            navBarColor = MaterialTheme.colorScheme.background,
-        )
-        Navigator(
-            screen = LandingScreen(),
-            content = { navigator ->
-                ProvideAppNavigator(
-                    navigator = navigator,
-                    content = { SlideTransition(navigator = navigator) },
-                )
-            },
-        )
-    }
+  KoinContext {
+      PoemPulseTheme(
+          useDarkTheme = darkTheme
+      ){
+          StatusBarColors(
+              statusBarColor = MaterialTheme.colorScheme.background,
+              navBarColor = MaterialTheme.colorScheme.background,
+          )
+          Navigator(
+              screen = LandingScreen(),
+              content = { navigator ->
+                  ProvideAppNavigator(
+                      navigator = navigator,
+                      content = { SlideTransition(navigator = navigator) },
+                  )
+              },
+          )
+      }
+  }
 }
