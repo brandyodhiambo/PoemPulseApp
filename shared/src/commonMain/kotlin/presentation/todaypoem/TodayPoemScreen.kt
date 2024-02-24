@@ -203,23 +203,14 @@ fun PoemCard(
                 )
             )
             Spacer(modifier.height(8.dp))
-            var expanded by remember { mutableStateOf(false) }
             Text(
-                modifier = modifier.fillMaxWidth()
-                    .animateContentSize(
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioLowBouncy,
-                            stiffness = Spring.StiffnessLow
-                        )
-                    ).clickable {
-                        expanded = !expanded
-                    },
+                modifier = modifier.fillMaxWidth(),
                 text = line,
                 style = MaterialTheme.typography.bodyMedium.copy(
                     fontSize = 16.sp,
                     textAlign = TextAlign.Start
                 ),
-                maxLines = if (expanded) 6 else 3,
+                maxLines = 3,
                 overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier.height(8.dp))

@@ -1,5 +1,6 @@
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.coroutineScope
+import cafe.adriel.voyager.core.model.screenModelScope
 import domain.model.author.Author
 import domain.model.author.AuthorPoem
 import domain.usecase.GetAuthorPoemUseCase
@@ -12,11 +13,12 @@ class AuthorViewModel(
     private val getAuthorPoemUseCase: GetAuthorPoemUseCase,
 ) : StateScreenModel<AuthorState>(AuthorState.Init) {
 
+    private val viewModelScope = screenModelScope
     init {
         getAuthors()
     }
     private fun getAuthors() {
-        coroutineScope.launch {
+        viewModelScope.launch {
             mutableState.value = AuthorState.Loading
             getAuthorUseCase.invoke().collectLatest { result ->
                 when (result) {
@@ -35,7 +37,7 @@ class AuthorViewModel(
     }
 
     fun getAuthorPoem(authorName: String) {
-        coroutineScope.launch {
+        viewModelScope.launch {
             mutableState.value = AuthorState.Loading
 
             getAuthorPoemUseCase.invoke(authorName).collectLatest { result ->

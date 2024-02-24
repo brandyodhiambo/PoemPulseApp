@@ -33,6 +33,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import divideIntoSmallerParagraphs
+import presentation.component.poemBody
 
 data class TodayPoemDetail(
     val title: String,
@@ -114,20 +115,6 @@ data class TodayPoemDetail(
                 }
             }
         }
-    }
-
-    @Composable
-    fun poemBody(paragraph: String) {
-        Spacer(Modifier.height(8.dp))
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = paragraph,
-            style = MaterialTheme.typography.bodyMedium.copy(
-                fontSize = 16.sp,
-                textAlign = TextAlign.Start
-            ),
-        )
-        Spacer(Modifier.height(8.dp))
     }
 
 }

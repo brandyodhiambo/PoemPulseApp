@@ -80,14 +80,14 @@ fun divideIntoSmallerParagraphs(paragraph: String, linesPerParagraph: Int): List
     return smallerParagraphs
 }
 
-/*fun divideIntoSmallerParagraphs(paragraph: String, linesPerParagraph: Int): String {
+fun divideIntoSmallerParagraph(paragraph: String, linesPerParagraph: Int): String {
     val lines = paragraph.split(",")
     val smallerParagraphs = mutableListOf<String>()
     var currentParagraph = StringBuilder()
 
     for (line in lines) {
         currentParagraph.append(line.trim())
-        currentParagraph.append(",")
+        currentParagraph.append("\n")
 
         if (currentParagraph.lines().size >= linesPerParagraph) {
             smallerParagraphs.add(currentParagraph.toString().trim())
@@ -99,7 +99,7 @@ fun divideIntoSmallerParagraphs(paragraph: String, linesPerParagraph: Int): List
         smallerParagraphs.add(currentParagraph.toString().trim())
     }
 
-    return smallerParagraphs.joinToString("\n\n------------------\n\n")
-}*/
+    return smallerParagraphs.joinToString("\n\n\n")
+}
 
 
