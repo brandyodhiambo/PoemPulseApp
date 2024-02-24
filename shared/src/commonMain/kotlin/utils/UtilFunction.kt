@@ -56,3 +56,28 @@ fun FilledIcon(item: Tab) = when (item.options.index) {
     (2u).toUShort() -> painterResource("title_filled.xml")
     else -> painterResource("home_filled.xml")
 }
+
+
+fun divideIntoSmallerParagraphs(paragraph: String, linesPerParagraph: Int): String {
+    val lines = paragraph.split("\n")
+    val smallerParagraphs = mutableListOf<String>()
+    var currentParagraph = StringBuilder()
+
+    for (line in lines) {
+        currentParagraph.append(line.trim())
+        currentParagraph.append("\n")
+
+        if (currentParagraph.lines().size >= linesPerParagraph) {
+            smallerParagraphs.add(currentParagraph.toString().trim())
+            currentParagraph = StringBuilder()
+        }
+    }
+
+    if (currentParagraph.isNotEmpty()) {
+        smallerParagraphs.add(currentParagraph.toString().trim())
+    }
+
+    return smallerParagraphs.joinToString("\n\n------------------\n\n")
+}
+
+

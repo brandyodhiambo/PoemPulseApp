@@ -1,32 +1,47 @@
 package presentation.todaypoem
 
+import LocalAppNavigator
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import cafe.adriel.voyager.navigator.LocalNavigator
+import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.currentOrThrow
+import kotlinx.coroutines.flow.collectLatest
 import org.koin.compose.koinInject
 import platform.StatusBarColors
+import utils.UiEvents
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodayPoemScreen(
     todayPoemViewModel: TodayPoemViewModel = koinInject()
@@ -35,9 +50,45 @@ fun TodayPoemScreen(
         statusBarColor = MaterialTheme.colorScheme.background,
         navBarColor = MaterialTheme.colorScheme.background,
     )
-    val navigator = LocalNavigator.currentOrThrow
-    val todayPoemState = todayPoemViewModel.state.collectAsState()
+    val navigator = LocalAppNavigator.currentOrThrow
+    val snackbarHostState = remember { SnackbarHostState() }
+    val todayPoemState by todayPoemViewModel.state.collectAsState()
 
+    LaunchedEffect(key1 = true, block = {
+        todayPoemViewModel.eventFlow.collectLatest { event->
+            when(event){
+                is UiEvents.SnackbarEvent ->{
+                    snackbarHostState.showSnackbar(
+                        message = event.message
+                    )
+                }
+
+                else -> {}
+            }
+        }
+    })
+
+    TodayPoemContent(
+        todayPoemState = todayPoemState,
+        snackbarHostState = { SnackbarHost(snackbarHostState) },
+        onPoemClicked = { title, line, author ->
+            navigator.push(TodayPoemDetail(
+                title = title,
+                line = line,
+                author = author
+            ))
+        }
+    )
+
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TodayPoemContent(
+    todayPoemState: TodayPoemState,
+    snackbarHostState: @Composable () -> Unit,
+    onPoemClicked:(title:String,line:String,author:String)->Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -45,17 +96,30 @@ fun TodayPoemScreen(
                     containerColor = MaterialTheme.colorScheme.background
                 ) ,
                 title = {
-                    Text(
-                        text = "Today's Poem",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onBackground,
-                    )
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ){
+                        Text(
+                            text = "Hello Poem Lover \uD83D\uDC4B, ",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "here are today's poem for you",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+
                 }
             )
         },
-    ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            when (val result = todayPoemState.value) {
+        snackbarHost = snackbarHostState
+    ) {paddingValue->
+        Box(modifier = Modifier.fillMaxSize().padding(paddingValue)) {
+            when (todayPoemState) {
                 is TodayPoemState.Init -> {}
 
                 is TodayPoemState.Loading -> {
@@ -66,25 +130,27 @@ fun TodayPoemScreen(
 
                 is TodayPoemState.Error -> {
                     Text(
-                        text = result.error,
-                        modifier = Modifier.align(Alignment.Center),
+                        modifier = Modifier.fillMaxWidth(),
+                        text = todayPoemState.error,
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontSize = 20.sp,
+                            textAlign = TextAlign.Center,
+                        )
                     )
                 }
 
                 is TodayPoemState.Result -> {
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(1),
-                        contentPadding = PaddingValues(8.dp),
+                        contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
-                        items(result.poems) { poem ->
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(4.dp),
-                                text = poem.lines,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onBackground,
+                        items(todayPoemState.poems) { poem ->
+                            PoemCard(
+                                title = poem.title,
+                                line = poem.lines,
+                                author = poem.author,
+                                onPoemClicked = onPoemClicked
                             )
                         }
                     }
@@ -94,4 +160,63 @@ fun TodayPoemScreen(
             }
         }
     }
+}
+
+@Composable
+fun PoemCard(
+    title:String,
+    line:String,
+    author:String,
+    modifier: Modifier = Modifier,
+    onPoemClicked:(title:String,line:String,author:String)->Unit
+) {
+    Card(
+        modifier = modifier.fillMaxWidth()
+            .clickable {
+                onPoemClicked(
+                    title,
+                    line,
+                    author
+                )
+            },
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+            contentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
+        )
+    ){
+        Column (
+            modifier = modifier.fillMaxSize().padding(16.dp),
+        ){
+                Text(
+                    modifier = modifier.fillMaxWidth(),
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontSize = 20.sp,
+                        textAlign = TextAlign.Start,
+                    )
+                )
+                Spacer(modifier.height(8.dp))
+                Text(
+                    modifier = modifier.fillMaxWidth(),
+                    text = line,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.Start
+                    ),
+                    maxLines = 4,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(modifier.height(8.dp))
+                Text(
+                    modifier = modifier.fillMaxWidth(),
+                    text = "By:${author}",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.End
+                    ),
+                )
+        }
+
+    }
+
 }
