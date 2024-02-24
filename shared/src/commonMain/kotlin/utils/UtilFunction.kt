@@ -58,8 +58,8 @@ fun FilledIcon(item: Tab) = when (item.options.index) {
 }
 
 
-fun divideIntoSmallerParagraphs(paragraph: String, linesPerParagraph: Int): String {
-    val lines = paragraph.split("\n")
+fun divideIntoSmallerParagraphs(paragraph: String, linesPerParagraph: Int): List<String> {
+    val lines = paragraph.split(",")
     val smallerParagraphs = mutableListOf<String>()
     var currentParagraph = StringBuilder()
 
@@ -77,7 +77,29 @@ fun divideIntoSmallerParagraphs(paragraph: String, linesPerParagraph: Int): Stri
         smallerParagraphs.add(currentParagraph.toString().trim())
     }
 
-    return smallerParagraphs.joinToString("\n\n------------------\n\n")
+    return smallerParagraphs
 }
+
+/*fun divideIntoSmallerParagraphs(paragraph: String, linesPerParagraph: Int): String {
+    val lines = paragraph.split(",")
+    val smallerParagraphs = mutableListOf<String>()
+    var currentParagraph = StringBuilder()
+
+    for (line in lines) {
+        currentParagraph.append(line.trim())
+        currentParagraph.append(",")
+
+        if (currentParagraph.lines().size >= linesPerParagraph) {
+            smallerParagraphs.add(currentParagraph.toString().trim())
+            currentParagraph = StringBuilder()
+        }
+    }
+
+    if (currentParagraph.isNotEmpty()) {
+        smallerParagraphs.add(currentParagraph.toString().trim())
+    }
+
+    return smallerParagraphs.joinToString("\n\n------------------\n\n")
+}*/
 
 

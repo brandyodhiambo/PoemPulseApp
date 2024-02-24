@@ -180,8 +180,8 @@ fun PoemCard(
                 )
             },
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
-            contentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary
         )
     ){
         Column (

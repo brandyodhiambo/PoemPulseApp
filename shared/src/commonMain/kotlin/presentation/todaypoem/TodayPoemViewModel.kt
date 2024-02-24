@@ -31,6 +31,7 @@ class TodayPoemViewModel(
                                 result.errorMessage ?: "Unknown Error Occurred"
                             )
                         )
+                        mutableState.value = TodayPoemState.Result(poems = result.data ?: emptyList())
                     }
 
                     is NetworkResult.Success -> {
