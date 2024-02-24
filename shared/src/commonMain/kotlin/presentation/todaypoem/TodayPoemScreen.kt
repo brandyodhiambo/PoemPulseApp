@@ -1,6 +1,9 @@
 package presentation.todaypoem
 
 import LocalAppNavigator
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,7 +32,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -55,9 +60,9 @@ fun TodayPoemScreen(
     val todayPoemState by todayPoemViewModel.state.collectAsState()
 
     LaunchedEffect(key1 = true, block = {
-        todayPoemViewModel.eventFlow.collectLatest { event->
-            when(event){
-                is UiEvents.SnackbarEvent ->{
+        todayPoemViewModel.eventFlow.collectLatest { event ->
+            when (event) {
+                is UiEvents.SnackbarEvent -> {
                     snackbarHostState.showSnackbar(
                         message = event.message
                     )
@@ -72,11 +77,13 @@ fun TodayPoemScreen(
         todayPoemState = todayPoemState,
         snackbarHostState = { SnackbarHost(snackbarHostState) },
         onPoemClicked = { title, line, author ->
-            navigator.push(TodayPoemDetail(
-                title = title,
-                line = line,
-                author = author
-            ))
+            navigator.push(
+                TodayPoemDetail(
+                    title = title,
+                    line = line,
+                    author = author
+                )
+            )
         }
     )
 
@@ -87,19 +94,19 @@ fun TodayPoemScreen(
 fun TodayPoemContent(
     todayPoemState: TodayPoemState,
     snackbarHostState: @Composable () -> Unit,
-    onPoemClicked:(title:String,line:String,author:String)->Unit
+    onPoemClicked: (title: String, line: String, author: String) -> Unit
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background
-                ) ,
+                ),
                 title = {
                     Column(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally,
-                    ){
+                    ) {
                         Text(
                             text = "Hello Poem Lover \uD83D\uDC4B, ",
                             style = MaterialTheme.typography.titleLarge,
@@ -117,7 +124,7 @@ fun TodayPoemContent(
             )
         },
         snackbarHost = snackbarHostState
-    ) {paddingValue->
+    ) { paddingValue ->
         Box(modifier = Modifier.fillMaxSize().padding(paddingValue)) {
             when (todayPoemState) {
                 is TodayPoemState.Init -> {}
@@ -164,11 +171,11 @@ fun TodayPoemContent(
 
 @Composable
 fun PoemCard(
-    title:String,
-    line:String,
-    author:String,
+    title: String,
+    line: String,
+    author: String,
     modifier: Modifier = Modifier,
-    onPoemClicked:(title:String,line:String,author:String)->Unit
+    onPoemClicked: (title: String, line: String, author: String) -> Unit
 ) {
     Card(
         modifier = modifier.fillMaxWidth()
@@ -183,38 +190,47 @@ fun PoemCard(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary
         )
-    ){
-        Column (
+    ) {
+        Column(
             modifier = modifier.fillMaxSize().padding(16.dp),
-        ){
-                Text(
-                    modifier = modifier.fillMaxWidth(),
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontSize = 20.sp,
-                        textAlign = TextAlign.Start,
-                    )
+        ) {
+            Text(
+                modifier = modifier.fillMaxWidth(),
+                text = title,
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontSize = 20.sp,
+                    textAlign = TextAlign.Start,
                 )
-                Spacer(modifier.height(8.dp))
-                Text(
-                    modifier = modifier.fillMaxWidth(),
-                    text = line,
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontSize = 16.sp,
-                        textAlign = TextAlign.Start
-                    ),
-                    maxLines = 4,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Spacer(modifier.height(8.dp))
-                Text(
-                    modifier = modifier.fillMaxWidth(),
-                    text = "By:${author}",
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontSize = 16.sp,
-                        textAlign = TextAlign.End
-                    ),
-                )
+            )
+            Spacer(modifier.height(8.dp))
+            var expanded by remember { mutableStateOf(false) }
+            Text(
+                modifier = modifier.fillMaxWidth()
+                    .animateContentSize(
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioLowBouncy,
+                            stiffness = Spring.StiffnessLow
+                        )
+                    ).clickable {
+                        expanded = !expanded
+                    },
+                text = line,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Start
+                ),
+                maxLines = if (expanded) 6 else 3,
+                overflow = TextOverflow.Ellipsis
+            )
+            Spacer(modifier.height(8.dp))
+            Text(
+                modifier = modifier.fillMaxWidth(),
+                text = "By:${author}",
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.End
+                ),
+            )
         }
 
     }
