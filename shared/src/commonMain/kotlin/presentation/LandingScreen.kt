@@ -79,11 +79,6 @@ internal class LandingScreen : Screen, KoinComponent {
                     ),
                 )
                 Spacer(modifier = Modifier.height(24.dp))
-              /*  Image(
-                    painter = painterResource(landingPageImage),
-                    contentDescription = landingPageImage,
-                    modifier = Modifier.size(400.dp),
-                )*/
                 AnimationLoader(
                     spec = spec,
                     modifier = Modifier.size(400.dp)
