@@ -33,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -45,10 +46,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.currentOrThrow
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.collectLatest
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
 import platform.StatusBarColors
+import utils.UiEvents
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,34 +65,28 @@ fun AuthorScreen(
 
     val navigator = LocalAppNavigator.currentOrThrow
     val snackbarHostState = remember { SnackbarHostState() }
-    val authorState by authorViewModel.state.collectAsState()
+    val authorState = authorViewModel.authorUiState.collectAsState().value
 
-    val authorImage = listOf(
-        "poemauthor1.jpeg",
-        "poemauthor2.jpeg",
-        "poemauthor3.jpeg",
-        "poemauthor4.jpeg",
-        "poemauthor5.jpeg",
-        "poemauthor6.jpeg",
-        "poemauthor7.jpeg",
-        "poemauthor8.jpeg",
-        "poemauthor9.jpeg",
-        "poemauthor11.jpeg",
-        "poemauthor12.jpeg",
-        "poemauthor13.jpeg",
-        "poemauthor14.jpeg",
-        "poemauthor15.jpeg",
-        "poemauthor16.jpeg",
-        "poemauthor17.jpeg",
-        "poemauthor18.jpeg",
-        "poemauthor19.jpeg",
-        "poemauthor20.jpeg",
-    )
+
+    LaunchedEffect(key1 = true, block = {
+        authorViewModel.eventsFlow.collectLatest { event ->
+            when (event) {
+                is UiEvents.SnackbarEvent -> {
+                    snackbarHostState.showSnackbar(
+                        message = event.message,
+                    )
+                }
+
+                else -> {}
+            }
+
+        }
+    })
 
     AuthorScreenContent(
-        authorImage = authorImage,
+        authorImage = authorViewModel.authorImage,
         authorState = authorState,
-        snackbarHostState ={ SnackbarHost(snackbarHostState) },
+        snackbarHostState = { SnackbarHost(snackbarHostState) },
         onAuthorClicked = {
             navigator.push(AuthorPoemScreen(it))
         }
@@ -102,7 +99,7 @@ fun AuthorScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AuthorScreenContent(
-    authorImage:List<String>,
+    authorImage: List<String>,
     authorState: AuthorState,
     snackbarHostState: @Composable () -> Unit,
     onAuthorClicked: (String) -> Unit
@@ -125,39 +122,32 @@ fun AuthorScreenContent(
         snackbarHost = snackbarHostState
     ) { paddingValues ->
         Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
-            when (authorState) {
-                is AuthorState.Init -> {}
 
-                is AuthorState.Loading -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center),
+            if (authorState.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                )
+            }
+
+            if (authorState.error != null) {
+                Text(
+                    text = authorState.error,
+                    modifier = Modifier.align(Alignment.Center),
+                )
+            }
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(1),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                items(authorState.author) { author ->
+                    authorCard(
+                        image = authorImage.random(),
+                        authorName = author,
+                        onAuthorClicked = onAuthorClicked
                     )
                 }
-
-                is AuthorState.Error -> {
-                    Text(
-                        text = authorState.error,
-                        modifier = Modifier.align(Alignment.Center),
-                    )
-                }
-
-                is AuthorState.Result -> {
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(1),
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                    ) {
-                        items(authorState.authors) { author ->
-                            authorCard(
-                                image = authorImage.random() ,
-                                authorName = author,
-                                onAuthorClicked = onAuthorClicked
-                            )
-                        }
-                    }
-                }
-
-                else -> {}
             }
         }
     }

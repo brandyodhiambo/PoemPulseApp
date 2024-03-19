@@ -28,10 +28,12 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,26 +50,44 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import divideIntoSmallerParagraph
 import divideIntoSmallerParagraphs
+import kotlinx.coroutines.flow.collectLatest
 import org.koin.compose.koinInject
 import org.koin.compose.rememberKoinInject
 import org.koin.core.component.KoinComponent
 import platform.StatusBarColors
 import presentation.component.poemBody
+import utils.UiEvents
 
 data class AuthorPoemScreen(
     val author: String,
-) : Screen{
+) : Screen {
 
     @Composable
     override fun Content() {
-        val authorViewModel:AuthorViewModel = koinInject()
+        val authorViewModel: AuthorViewModel = koinInject()
         StatusBarColors(
             statusBarColor = MaterialTheme.colorScheme.background,
             navBarColor = MaterialTheme.colorScheme.background,
         )
 
         val navigator = LocalNavigator.currentOrThrow
-        val authorState  by authorViewModel.state.collectAsState()
+        val snackbarHostState = remember { SnackbarHostState() }
+        val authorState = authorViewModel.authorUiState.collectAsState().value
+
+        LaunchedEffect(key1 = true, block = {
+            authorViewModel.eventsFlow.collectLatest { event ->
+                when (event) {
+                    is UiEvents.SnackbarEvent -> {
+                        snackbarHostState.showSnackbar(
+                            message = event.message,
+                        )
+                    }
+
+                    else -> {}
+                }
+
+            }
+        })
 
         authorViewModel.getAuthorPoem(authorName = author)
 
@@ -84,8 +104,8 @@ data class AuthorPoemScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AuthorPoemScreenContent(
-    author:String,
-    authorState:AuthorState,
+    author: String,
+    authorState: AuthorState,
     onBackPressed: () -> Unit
 ) {
 
@@ -94,7 +114,7 @@ fun AuthorPoemScreenContent(
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background
-                ) ,
+                ),
                 title = {
                     Text(
                         text = author,
@@ -115,38 +135,31 @@ fun AuthorPoemScreenContent(
                 }
             )
         },
-    ) {paddingValue->
+    ) { paddingValue ->
         Box(modifier = Modifier.fillMaxSize().padding(paddingValue)) {
-            when (authorState) {
-                is AuthorState.Init -> {}
 
-                is AuthorState.Loading -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center),
-                    )
+            if (authorState.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                )
+            }
+
+            if (authorState.error != null) {
+                Text(
+                    text = authorState.error,
+                    modifier = Modifier.align(Alignment.Center),
+                )
+            }
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(1),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                items(authorState.authorPoem) { poems ->
+                    val paragraphs = divideIntoSmallerParagraph(poems.lines.joinToString(","), 5)
+                    authorPoemBody(poems.title, paragraphs)
                 }
-
-                is AuthorState.Error -> {
-                    Text(
-                        text = authorState.error,
-                        modifier = Modifier.align(Alignment.Center),
-                    )
-                }
-
-                is AuthorState.AuthorPoemResult -> {
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(1),
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                    ) {
-                        items(authorState.poem) { poems ->
-                            val paragraphs = divideIntoSmallerParagraph(poems.lines.joinToString(","), 5)
-                            authorPoemBody(poems.title,paragraphs)
-                        }
-                    }
-                }
-
-                else -> {}
             }
         }
     }
@@ -154,7 +167,7 @@ fun AuthorPoemScreenContent(
 }
 
 @Composable
-fun authorPoemBody(title:String,paragraph: String) {
+fun authorPoemBody(title: String, paragraph: String) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
