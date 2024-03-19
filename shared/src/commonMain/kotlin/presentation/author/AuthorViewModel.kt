@@ -63,6 +63,12 @@ class AuthorViewModel(
                                 error = result.errorMessage
                             )
                         }
+
+                        _eventsFlow.emit(
+                            UiEvents.SnackbarEvent(
+                                result.errorMessage ?: "Unknown Error Occurred",
+                            ),
+                        )
                     }
 
                     is NetworkResult.Success -> {
@@ -93,6 +99,12 @@ class AuthorViewModel(
                                 error = result.errorMessage
                             )
                         }
+
+                        _eventsFlow.emit(
+                            UiEvents.SnackbarEvent(
+                                result.errorMessage ?: "Unknown Error Occurred",
+                            ),
+                        )
                     }
 
                     is NetworkResult.Success -> {
@@ -118,12 +130,3 @@ data class AuthorState(
     val author:List<String> = emptyList(),
     val authorPoem:List<AuthorPoem> = emptyList()
 )
-/*sealed class AuthorState {
-    data object Init : AuthorState()
-    data object Loading : AuthorState()
-
-    data class Result(val authors: List<String>) : AuthorState()
-    data class AuthorPoemResult(val poem: List<AuthorPoem>) : AuthorState()
-
-    data class Error(val error: String) : AuthorState()
-}*/

@@ -57,7 +57,7 @@ fun TodayPoemScreen(
     )
     val navigator = LocalAppNavigator.currentOrThrow
     val snackbarHostState = remember { SnackbarHostState() }
-    val todayPoemState by todayPoemViewModel.state.collectAsState()
+    val todayPoemState  = todayPoemViewModel.todayPoemState.collectAsState().value
 
     LaunchedEffect(key1 = true, block = {
         todayPoemViewModel.eventFlow.collectLatest { event ->
@@ -126,16 +126,14 @@ fun TodayPoemContent(
         snackbarHost = snackbarHostState
     ) { paddingValue ->
         Box(modifier = Modifier.fillMaxSize().padding(paddingValue)) {
-            when (todayPoemState) {
-                is TodayPoemState.Init -> {}
 
-                is TodayPoemState.Loading -> {
+                if(todayPoemState.isLoading){
                     CircularProgressIndicator(
                         modifier = Modifier.align(Alignment.Center),
                     )
                 }
 
-                is TodayPoemState.Error -> {
+               if(todayPoemState.error != null){
                     Text(
                         modifier = Modifier.fillMaxWidth(),
                         text = todayPoemState.error,
@@ -146,13 +144,12 @@ fun TodayPoemContent(
                     )
                 }
 
-                is TodayPoemState.Result -> {
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(1),
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
-                        items(todayPoemState.poems) { poem ->
+                        items(todayPoemState.poem) { poem ->
                             PoemCard(
                                 title = poem.title,
                                 line = poem.lines,
@@ -161,10 +158,7 @@ fun TodayPoemContent(
                             )
                         }
                     }
-                }
 
-                else -> {}
-            }
         }
     }
 }
