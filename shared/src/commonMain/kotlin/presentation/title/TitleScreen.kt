@@ -29,7 +29,7 @@ fun TitleScreen(
     titleViewModel: TitleViewModel = koinInject()
 ){
     val navigator = LocalNavigator.currentOrThrow
-    val titleState = titleViewModel.state.collectAsState()
+    val titleState = titleViewModel.titleState.collectAsState().value
 
     Scaffold(
         topBar = {
@@ -48,29 +48,26 @@ fun TitleScreen(
         },
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            when (val result = titleState.value) {
-                is TitleState.Init -> {}
 
-                is TitleState.Loading -> {
+                if(titleState.isLoading){
                     CircularProgressIndicator(
                         modifier = Modifier.align(Alignment.Center),
                     )
                 }
 
-                is TitleState.Error -> {
+                if (titleState.error != null) {
                     Text(
-                        text = result.error,
+                        text = titleState.error,
                         modifier = Modifier.align(Alignment.Center),
                     )
                 }
 
-                is TitleState.Result -> {
                     LazyVerticalGrid(
-                        columns = GridCells.Fixed(4),
+                        columns = GridCells.Fixed(2),
                         contentPadding = PaddingValues(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        items(result.title) { title ->
+                        items(titleState.title) { title ->
                             Text(
                                 text = title,
                                 style = MaterialTheme.typography.bodyMedium,
@@ -78,10 +75,7 @@ fun TitleScreen(
                             )
                         }
                     }
-                }
 
-                else -> {}
-            }
         }
     }
 }

@@ -70,7 +70,7 @@ class PoemPulseRepositoryImpl(
                     )
                     titleDao.insertPoemTitle(title.toTitleEntity())
                 }
-            } else{
+            } /*else{
                 titleDao.deletePoemTitle()
                 val apiTitle =  apiService.getTitles()
                 apiTitle.titles.forEach {
@@ -79,7 +79,7 @@ class PoemPulseRepositoryImpl(
                     )
                     titleDao.insertPoemTitle(title.toTitleEntity())
                 }
-            }
+            }*/
             titleDao.getPoemTitle().map { it.title }
         }
         emit(response)

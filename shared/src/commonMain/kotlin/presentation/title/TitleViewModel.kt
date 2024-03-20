@@ -1,38 +1,66 @@
 package presentation.title
 
 import NetworkResult
-import cafe.adriel.voyager.core.model.StateScreenModel
-import cafe.adriel.voyager.core.model.coroutineScope
+import cafe.adriel.voyager.core.model.ScreenModel
+import cafe.adriel.voyager.core.model.screenModelScope
 import domain.model.title.GivenWordTitle
 import domain.model.title.TitleLine
 import domain.usecase.GetGivenWordTitleUseCase
 import domain.usecase.GetPoemTitleUseCase
 import domain.usecase.GetTitleLineUseCase
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import utils.UiEvents
 
 class TitleViewModel(
     private val getPoemTitleUseCase: GetPoemTitleUseCase,
     private val getTitleLineUseCase: GetTitleLineUseCase,
     private val getGivenWordTitleUseCase: GetGivenWordTitleUseCase
-):StateScreenModel<TitleState>(TitleState.Init) {
+):ScreenModel {
+
+    private val viewModelScope = screenModelScope
+    private val _titleState = MutableStateFlow(TitleState())
+    val titleState get() = _titleState.asStateFlow()
+
+    private val _eventFlow = MutableSharedFlow<UiEvents>()
+    val eventFlow get() = _eventFlow.asSharedFlow()
 
     init {
         getTitle()
     }
 
     private fun getTitle(){
-        coroutineScope.launch {
-            mutableState.value = TitleState.Loading
+        viewModelScope.launch {
+           _titleState.update { it.copy(isLoading = true) }
 
             getPoemTitleUseCase.invoke().collectLatest { result->
                 when(result){
                     is NetworkResult.Error->{
-                        mutableState.value = TitleState.Error(error = result.errorMessage ?:"Unknown Error Occurred")
+                        _titleState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = result.errorMessage
+                            )
+                        }
+                        _eventFlow.emit(
+                            UiEvents.SnackbarEvent(
+                                message = result.errorMessage ?: "Unknown error occurred"
+                            )
+                        )
                     }
 
                     is NetworkResult.Success ->{
-                        mutableState.value = TitleState.Result(title = result.data?: emptyList())
+                        _titleState.update {
+                            it.copy(
+                                isLoading = false,
+                                title = result.data ?: emptyList()
+                            )
+                        }
                     }
 
                     else -> {}
@@ -43,17 +71,33 @@ class TitleViewModel(
     }
 
     fun getTitleLine(title:String){
-        coroutineScope.launch {
-            mutableState.value = TitleState.Loading
+        viewModelScope.launch {
+            _titleState.update { it.copy(isLoading = true) }
 
             getTitleLineUseCase.invoke(title).collectLatest { result->
                 when(result){
                     is NetworkResult.Error ->{
-                        mutableState.value = TitleState.Error(error = result.errorMessage?:"Unknown Error Occurred")
+                        _titleState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = result.errorMessage
+                            )
+                        }
+
+                        _eventFlow.emit(
+                            UiEvents.SnackbarEvent(
+                                message = result.errorMessage ?:"Unknown error occurred"
+                            )
+                        )
                     }
 
                     is NetworkResult.Success->{
-                        mutableState.value = TitleState.TitleLineResult(line = result.data ?: emptyList())
+                        _titleState.update {
+                            it.copy(
+                                isLoading = false,
+                                titleLines = result.data ?: emptyList()
+                            )
+                        }
                     }
 
                     else -> {}
@@ -63,17 +107,17 @@ class TitleViewModel(
     }
 
     fun getGivenWordTitle(word:String){
-        coroutineScope.launch {
-            mutableState.value = TitleState.Loading
+        viewModelScope.launch {
+            _titleState.update { it.copy(isLoading = true) }
 
             getGivenWordTitleUseCase.invoke(word).collectLatest { result->
                 when(result){
                     is NetworkResult.Error->{
-                        mutableState.value = TitleState.Error(error = result.errorMessage?:"Unknown error occurred")
+                        _titleState.update { it.copy(isLoading = false,error = result.errorMessage) }
                     }
 
                     is NetworkResult.Success->{
-                        mutableState.value = TitleState.GivenWordTitleResult(title = result.data ?: emptyList())
+                        _titleState.update { it.copy(isLoading = false, givenWordTitle = result.data ?: emptyList()) }
                     }
 
                     else -> {}
@@ -83,14 +127,12 @@ class TitleViewModel(
     }
 }
 
-sealed class TitleState{
-    data object Init:TitleState()
-    data object Loading:TitleState()
 
-    data class Result(val title:List<String>):TitleState()
+data class TitleState(
+    val isLoading:Boolean = true,
+    val error:String? = null,
+    val title:List<String> = emptyList(),
+    val titleLines:List<TitleLine> = emptyList(),
+    val givenWordTitle:List<GivenWordTitle> = emptyList()
 
-    data class TitleLineResult(val line:List<TitleLine>):TitleState()
-    data class GivenWordTitleResult(val title:List<GivenWordTitle>):TitleState()
-
-    data class Error(val error:String):TitleState()
-}
+)
