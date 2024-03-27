@@ -26,17 +26,50 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun poemBody(paragraph: String) {
+fun poemBody(paragraph: String,author:String,title:String) {
     Spacer(Modifier.height(8.dp))
-    Text(
-        modifier = Modifier.fillMaxWidth(),
-        text = paragraph,
-        style = MaterialTheme.typography.bodyMedium.copy(
-            fontSize = 16.sp,
-            textAlign = TextAlign.Start
-        ),
-    )
-    Spacer(Modifier.height(8.dp))
+    Column(
+        modifier = Modifier.fillMaxSize().padding(16.dp),
+    ) {
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = title,
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontSize = 16.sp,
+                textAlign = TextAlign.Start,
+            ),
+            color = MaterialTheme.colorScheme.onBackground,
+        )
+        Spacer(Modifier.height(8.dp))
+        var expanded by remember { mutableStateOf(false) }
+        Text(
+            modifier = Modifier.fillMaxWidth()
+                .animateContentSize(
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioLowBouncy,
+                        stiffness = Spring.StiffnessLow
+                    )
+                ).clickable {
+                    expanded = !expanded
+                },
+            text = paragraph,
+            style = MaterialTheme.typography.bodyMedium.copy(
+                fontSize = 14.sp,
+                textAlign = TextAlign.Start
+            ),
+            maxLines = if (expanded) paragraph.length else 3,
+            overflow = TextOverflow.Ellipsis
+        )
+        Spacer(Modifier.height(8.dp))
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = "_ $author",
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontSize = 16.sp,
+                textAlign = TextAlign.Start
+            ),
+        )
+    }
 }
 
 @Composable

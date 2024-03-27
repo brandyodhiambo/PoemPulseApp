@@ -1,9 +1,6 @@
 package presentation.todaypoem
 
 import LocalAppNavigator
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,10 +28,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -150,7 +144,7 @@ fun TodayPoemContent(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
                         items(todayPoemState.poem) { poem ->
-                            PoemCard(
+                            TodayPoemCard(
                                 title = poem.title,
                                 line = poem.lines,
                                 author = poem.author,
@@ -164,7 +158,7 @@ fun TodayPoemContent(
 }
 
 @Composable
-fun PoemCard(
+fun TodayPoemCard(
     title: String,
     line: String,
     author: String,
@@ -181,7 +175,7 @@ fun PoemCard(
                 )
             },
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primary,
+            containerColor = MaterialTheme.colorScheme.primary.copy(.4f),
             contentColor = MaterialTheme.colorScheme.onPrimary
         )
     ) {
