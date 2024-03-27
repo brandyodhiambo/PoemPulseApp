@@ -203,11 +203,11 @@ fun TodayPoemCard(
             )
             Spacer(modifier.height(8.dp))
             Text(
-                modifier = modifier.fillMaxWidth(),
-                text = "By:${author}",
+                modifier = Modifier.fillMaxWidth(),
+                text = "_ $author",
                 style = MaterialTheme.typography.titleMedium.copy(
-                    fontSize = 16.sp,
-                    textAlign = TextAlign.End
+                    fontSize = 12.sp,
+                    textAlign = TextAlign.Start
                 ),
             )
         }
