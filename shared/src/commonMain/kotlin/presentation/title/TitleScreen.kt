@@ -72,7 +72,9 @@ fun TitleScreen(
     TitleScreenContent(
         titleState = titleState,
         snackbarHostState = { SnackbarHost(snackbarHostState) },
-        onPoemTitleClicked = {}
+        onPoemTitleClicked = {
+            navigator.push(TitlePoemScreen(it))
+        }
     )
 
 

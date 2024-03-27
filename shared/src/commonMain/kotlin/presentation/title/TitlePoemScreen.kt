@@ -1,7 +1,5 @@
-package presentation.author
+package presentation.title
 
-import AuthorState
-import AuthorViewModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -39,55 +37,57 @@ import platform.StatusBarColors
 import presentation.component.PoemCard
 import utils.UiEvents
 
-data class AuthorPoemScreen(
-    val author: String,
+data class TitlePoemScreen(
+    val title:String,
 ) : Screen {
 
     @Composable
     override fun Content() {
-        val authorViewModel: AuthorViewModel = koinInject()
+        val titleViewModel:TitleViewModel = koinInject()
         StatusBarColors(
             statusBarColor = MaterialTheme.colorScheme.background,
-            navBarColor = MaterialTheme.colorScheme.background,
+            navBarColor = MaterialTheme.colorScheme.background
         )
 
         val navigator = LocalNavigator.currentOrThrow
-        val snackbarHostState = remember { SnackbarHostState() }
-        val authorState = authorViewModel.authorUiState.collectAsState().value
+        val snackBarHostState = remember{SnackbarHostState()}
+        val titleState = titleViewModel.titleState.collectAsState().value
 
         LaunchedEffect(key1 = true, block = {
-            authorViewModel.eventsFlow.collectLatest { event ->
-                when (event) {
-                    is UiEvents.SnackbarEvent -> {
-                        snackbarHostState.showSnackbar(
-                            message = event.message,
+            titleViewModel.eventFlow.collectLatest { event->
+                when(event){
+                    is UiEvents.SnackbarEvent ->{
+                        snackBarHostState.showSnackbar(
+                            message = event.message
                         )
                     }
 
-                    else -> {}
-                }
+                    is UiEvents.NavigationEvent -> {
 
+                    }
+                }
             }
         })
 
-        authorViewModel.getAuthorPoem(authorName = author)
+        titleViewModel.getTitleLine(title = title)
 
-        AuthorPoemScreenContent(
-            author = author,
-            authorState = authorState,
+        TitlePoemContent(
+            title = title,
+            titleState = titleState,
             onBackPressed = {
                 navigator.pop()
             }
         )
     }
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AuthorPoemScreenContent(
-    author: String,
-    authorState: AuthorState,
-    onBackPressed: () -> Unit
+fun TitlePoemContent(
+    title:String,
+    titleState: TitleState,
+    onBackPressed: () ->Unit
 ) {
 
     Scaffold(
@@ -98,7 +98,7 @@ fun AuthorPoemScreenContent(
                 ),
                 title = {
                     Text(
-                        text = author,
+                        text = title,
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onBackground,
                     )
@@ -110,7 +110,7 @@ fun AuthorPoemScreenContent(
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             tint = MaterialTheme.colorScheme.onBackground,
-                            contentDescription = "author poem Back Arrow"
+                            contentDescription = "title poem Back Arrow"
                         )
                     }
                 }
@@ -119,15 +119,15 @@ fun AuthorPoemScreenContent(
     ) { paddingValue ->
         Box(modifier = Modifier.fillMaxSize().padding(paddingValue)) {
 
-            if (authorState.isLoading) {
+            if (titleState.isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center),
                 )
             }
 
-            if (authorState.error != null) {
+            if (titleState.error != null) {
                 Text(
-                    text = authorState.error,
+                    text = titleState.error,
                     modifier = Modifier.align(Alignment.Center),
                 )
             }
@@ -137,14 +137,11 @@ fun AuthorPoemScreenContent(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                items(authorState.authorPoem) { poems ->
+                items(titleState.titleLines) { poems ->
                     val paragraphs = divideIntoSmallerParagraph(poems.lines.joinToString(","), 5)
-                    PoemCard(poems.title, paragraphs)
+                    PoemCard(poems.author, paragraphs)
                 }
             }
         }
     }
-
 }
-
-
