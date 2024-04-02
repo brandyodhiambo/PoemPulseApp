@@ -33,6 +33,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import divideIntoSmallerParagraph
+import getEncodedName
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.compose.koinInject
 import platform.StatusBarColors
@@ -70,7 +71,7 @@ data class AuthorPoemScreen(
             }
         })
 
-        authorViewModel.getAuthorPoem(authorName = author)
+        authorViewModel.getAuthorPoem(authorName = author.getEncodedName())
 
         AuthorPoemScreenContent(
             author = author,

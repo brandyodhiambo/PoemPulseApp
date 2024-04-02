@@ -102,4 +102,11 @@ fun divideIntoSmallerParagraph(paragraph: String, linesPerParagraph: Int): Strin
     return smallerParagraphs.joinToString("\n\n\n")
 }
 
+fun String.getEncodedName(): String {
+    return this.replace(" ", "%20")
+}
+fun String.getEncodedWord(): String {
+    return this.replace(" ", "+")
+}
+
 

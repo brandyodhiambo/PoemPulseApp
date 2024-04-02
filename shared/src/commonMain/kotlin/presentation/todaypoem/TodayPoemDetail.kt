@@ -35,6 +35,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import divideIntoSmallerParagraph
+import getEncodedName
 import org.koin.compose.koinInject
 import presentation.component.PoemCard
 import presentation.component.poemBody
@@ -50,7 +51,9 @@ data class TodayPoemDetail(
         val navigator = LocalNavigator.currentOrThrow
         val authorState = authorViewModel.authorUiState.collectAsState().value
 
-        authorViewModel.getAuthorPoem(authorName = author)
+
+
+        authorViewModel.getAuthorPoem(authorName = author.getEncodedName())
 
         PoemDetailContent(
             title = title,
