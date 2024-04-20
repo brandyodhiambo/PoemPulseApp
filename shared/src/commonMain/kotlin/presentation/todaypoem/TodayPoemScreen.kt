@@ -1,6 +1,7 @@
 package presentation.todaypoem
 
 import LocalAppNavigator
+import ObserveAsEvents
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,9 +27,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -36,7 +37,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.currentOrThrow
-import kotlinx.coroutines.flow.collectLatest
+import domain.model.todaypoem.TodayPoem
+import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import platform.StatusBarColors
 import utils.UiEvents
@@ -45,42 +47,34 @@ import utils.UiEvents
 fun TodayPoemScreen(
     todayPoemViewModel: TodayPoemViewModel = koinInject()
 ) {
-    StatusBarColors(
-        statusBarColor = MaterialTheme.colorScheme.background,
-        navBarColor = MaterialTheme.colorScheme.background,
-    )
     val navigator = LocalAppNavigator.currentOrThrow
     val snackbarHostState = remember { SnackbarHostState() }
-    val todayPoemState  = todayPoemViewModel.todayPoemState.collectAsState().value
+    val todayPoemState = todayPoemViewModel.todayPoemState.collectAsState().value
+    val scope = rememberCoroutineScope()
 
-    LaunchedEffect(key1 = true, block = {
-        todayPoemViewModel.eventFlow.collectLatest { event ->
-            when (event) {
-                is UiEvents.SnackbarEvent -> {
+    ObserveAsEvents(todayPoemViewModel.eventsFlow) { event ->
+        when (event) {
+            is UiEvents.SnackbarEvent -> {
+                scope.launch {
                     snackbarHostState.showSnackbar(
-                        message = event.message
+                        message = event.message,
                     )
                 }
-
-                else -> {}
             }
+
+            else -> {}
         }
-    })
+    }
 
     TodayPoemContent(
         todayPoemState = todayPoemState,
         snackbarHostState = { SnackbarHost(snackbarHostState) },
-        onPoemClicked = { title, line, author ->
+        onPoemClicked = {
             navigator.push(
-                TodayPoemDetail(
-                    title = title,
-                    line = line,
-                    author = author
-                )
+                TodayPoemDetail(it)
             )
         }
     )
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -88,7 +82,7 @@ fun TodayPoemScreen(
 fun TodayPoemContent(
     todayPoemState: TodayPoemState,
     snackbarHostState: @Composable () -> Unit,
-    onPoemClicked: (title: String, line: String, author: String) -> Unit
+    onPoemClicked: (poem: TodayPoem) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -119,72 +113,75 @@ fun TodayPoemContent(
         },
         snackbarHost = snackbarHostState
     ) { paddingValue ->
-        Box(modifier = Modifier.fillMaxSize().padding(paddingValue)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValue)
+        ) {
 
-                if(todayPoemState.isLoading){
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center),
+            if (todayPoemState.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                )
+            }
+
+            if (todayPoemState.poems.isEmpty() && todayPoemState.isLoading.not()) {
+                Text(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .fillMaxWidth(),
+                    text = "No poems found",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontSize = 20.sp,
+                        textAlign = TextAlign.Center,
                     )
-                }
+                )
+            }
 
-               if(todayPoemState.error != null){
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = todayPoemState.error,
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontSize = 20.sp,
-                            textAlign = TextAlign.Center,
+            if (todayPoemState.poems.isNotEmpty() && todayPoemState.isLoading.not()) {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(1),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    items(todayPoemState.poems) { poem ->
+                        TodayPoemCard(
+                            poem = poem,
+                            onPoemClicked = onPoemClicked
                         )
-                    )
-                }
-
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(1),
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                    ) {
-                        items(todayPoemState.poem) { poem ->
-                            TodayPoemCard(
-                                title = poem.title,
-                                line = poem.lines,
-                                author = poem.author,
-                                onPoemClicked = onPoemClicked
-                            )
-                        }
                     }
-
+                }
+            }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodayPoemCard(
-    title: String,
-    line: String,
-    author: String,
     modifier: Modifier = Modifier,
-    onPoemClicked: (title: String, line: String, author: String) -> Unit
+    poem: TodayPoem,
+    onPoemClicked: (poem: TodayPoem) -> Unit
 ) {
     Card(
-        modifier = modifier.fillMaxWidth()
-            .clickable {
-                onPoemClicked(
-                    title,
-                    line,
-                    author
-                )
-            },
+        modifier = modifier
+            .fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primary.copy(.4f),
             contentColor = MaterialTheme.colorScheme.onPrimary
-        )
+        ),
+        onClick = {
+            onPoemClicked(poem)
+        }
     ) {
         Column(
-            modifier = modifier.fillMaxSize().padding(16.dp),
+            modifier = modifier
+                .fillMaxSize()
+                .padding(16.dp),
         ) {
             Text(
                 modifier = modifier.fillMaxWidth(),
-                text = title,
+                text = poem.title,
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontSize = 20.sp,
                     textAlign = TextAlign.Start,
@@ -193,7 +190,7 @@ fun TodayPoemCard(
             Spacer(modifier.height(8.dp))
             Text(
                 modifier = modifier.fillMaxWidth(),
-                text = line,
+                text = poem.lines.joinToString(","),
                 style = MaterialTheme.typography.bodyMedium.copy(
                     fontSize = 16.sp,
                     textAlign = TextAlign.Start
@@ -204,14 +201,12 @@ fun TodayPoemCard(
             Spacer(modifier.height(8.dp))
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = "_ $author",
+                text = poem.author,
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontSize = 12.sp,
                     textAlign = TextAlign.Start
                 ),
             )
         }
-
     }
-
 }

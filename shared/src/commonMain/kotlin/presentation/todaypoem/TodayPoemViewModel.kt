@@ -2,16 +2,13 @@ package presentation.todaypoem
 
 import NetworkResult
 import cafe.adriel.voyager.core.model.ScreenModel
-import cafe.adriel.voyager.core.model.StateScreenModel
-import cafe.adriel.voyager.core.model.coroutineScope
 import cafe.adriel.voyager.core.model.screenModelScope
 import domain.model.todaypoem.TodayPoem
 import domain.usecase.GetTodayPoemUseCase
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import utils.UiEvents
@@ -21,42 +18,42 @@ class TodayPoemViewModel(
 ) : ScreenModel {
     private val viewModelScope = screenModelScope
 
-    private val _eventFlow = MutableSharedFlow<UiEvents>()
-    val eventFlow get() = _eventFlow.asSharedFlow()
+    private val _eventsFlow = Channel<UiEvents>()
+    val eventsFlow get() = _eventsFlow.receiveAsFlow()
+
 
     private val _todayPoemState = MutableStateFlow(TodayPoemState())
     val todayPoemState get() = _todayPoemState.asStateFlow()
-    private fun getTodayPoem() {
+    fun getTodayPoem() {
+        _todayPoemState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
-           _todayPoemState.update { it.copy(isLoading = true) }
-            val randomId = (0..10).random()
-            getTodayPoemUseCase.invoke(randomId).collectLatest { result ->
-                when (result) {
-                    is NetworkResult.Error -> {
-                        _todayPoemState.update {
-                            it.copy(
-                                isLoading = false,
-                                error = result.errorMessage
-                            )
-                        }
-                        _eventFlow.emit(
-                            UiEvents.SnackbarEvent(
-                                result.errorMessage ?: "Unknown Error Occurred"
-                            )
+            val randomPoemCount = 50
+            when (val result = getTodayPoemUseCase(randomPoemCount)) {
+                is NetworkResult.Error -> {
+                    _todayPoemState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = result.errorMessage,
+                            poems = result.data ?: emptyList()
                         )
                     }
-
-                    is NetworkResult.Success -> {
-                        _todayPoemState.update {
-                            it.copy(
-                                isLoading = false,
-                                poem = result.data ?: emptyList()
-                            )
-                        }
-                    }
-
-                    else -> {}
+                    _eventsFlow.trySend(
+                        UiEvents.SnackbarEvent(
+                            result.errorMessage ?: "Unknown Error Occurred"
+                        )
+                    )
                 }
+
+                is NetworkResult.Success -> {
+                    _todayPoemState.update {
+                        it.copy(
+                            isLoading = false,
+                            poems = result.data ?: emptyList()
+                        )
+                    }
+                }
+
+                else -> {}
             }
         }
     }
@@ -67,8 +64,7 @@ class TodayPoemViewModel(
 }
 
 data class TodayPoemState(
-    val isLoading:Boolean = false,
-    val error:String? = null,
-    val poem:List<TodayPoem> = emptyList()
-
+    val isLoading: Boolean = false,
+    val error: String? = null,
+    val poems: List<TodayPoem> = emptyList()
 )

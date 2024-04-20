@@ -1,7 +1,6 @@
 package domain.repository
 
 import NetworkResult
-import domain.model.author.Author
 import domain.model.author.AuthorPoem
 import domain.model.givenwordpoem.GivenWordPoem
 import domain.model.title.GivenWordTitle
@@ -19,7 +18,7 @@ interface PoemPulseRepository {
 
     suspend fun getGivenWordTitle(word: String):Flow<NetworkResult<List<GivenWordTitle>>>
 
-    suspend fun getTodayPoem(dayNumber: Int): Flow<NetworkResult<List<TodayPoem>>>
+    suspend fun getTodayPoem(randomPoemCount: Int): NetworkResult<List<TodayPoem>>
     suspend fun getAuthorPoem(authorName: String): Flow<NetworkResult<List<AuthorPoem>>>
 
     suspend fun getGivenWordPoem(word:String):Flow<NetworkResult<List<GivenWordPoem>>>

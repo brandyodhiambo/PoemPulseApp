@@ -1,5 +1,6 @@
 package presentation.title
 
+import ObserveAsEvents
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -24,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -31,10 +33,8 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import divideIntoSmallerParagraph
-import getEncodedWord
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
-import platform.StatusBarColors
 import presentation.component.PoemCard
 import utils.UiEvents
 
@@ -45,32 +45,28 @@ data class TitlePoemScreen(
     @Composable
     override fun Content() {
         val titleViewModel:TitleViewModel = koinInject()
-        StatusBarColors(
-            statusBarColor = MaterialTheme.colorScheme.background,
-            navBarColor = MaterialTheme.colorScheme.background
-        )
-
         val navigator = LocalNavigator.currentOrThrow
         val snackBarHostState = remember{SnackbarHostState()}
         val titleState = titleViewModel.titleState.collectAsState().value
+        val scope = rememberCoroutineScope()
 
-        LaunchedEffect(key1 = true, block = {
-            titleViewModel.eventFlow.collectLatest { event->
-                when(event){
-                    is UiEvents.SnackbarEvent ->{
+        ObserveAsEvents(titleViewModel.eventsFlow) { event ->
+            when (event) {
+                is UiEvents.SnackbarEvent -> {
+                    scope.launch {
                         snackBarHostState.showSnackbar(
-                            message = event.message
+                            message = event.message,
                         )
                     }
-
-                    is UiEvents.NavigationEvent -> {
-
-                    }
                 }
-            }
-        })
 
-        titleViewModel.getTitleLine(title = title.getEncodedWord())
+                else -> {}
+            }
+        }
+
+        LaunchedEffect(titleViewModel) {
+            titleViewModel.getTitleLine(title = title)
+        }
 
         TitlePoemContent(
             title = title,
@@ -80,7 +76,6 @@ data class TitlePoemScreen(
             }
         )
     }
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -1,3 +1,4 @@
 package platform
 
-expect fun String.encodeURIComponent(): String
+/*
+expect fun String.encodeURIComponent(): String*/

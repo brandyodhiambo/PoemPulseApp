@@ -1,5 +1,6 @@
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.staticCompositionLocalOf
 import cafe.adriel.voyager.navigator.Navigator
@@ -7,10 +8,16 @@ import cafe.adriel.voyager.navigator.tab.Tab
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.RedirectResponseException
 import io.ktor.client.plugins.ServerResponseException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
-suspend fun <T : Any> safeApiCall(apiCall: suspend () -> T): NetworkResult<T> {
+suspend fun <T : Any> safeApiCall(
+    cachedData: T? = null,
+    apiCall: suspend () -> T
+): NetworkResult<T> {
     return try {
         NetworkResult.Success(data = apiCall.invoke())
     } catch (e: RedirectResponseException) { // 3xx errors
@@ -18,23 +25,27 @@ suspend fun <T : Any> safeApiCall(apiCall: suspend () -> T): NetworkResult<T> {
         NetworkResult.Error(
             errorCode = e.response.status.value,
             errorMessage = e.message,
+            data = cachedData,
         )
     } catch (e: ClientRequestException) { // 4xx errors
 
         NetworkResult.Error(
             errorCode = e.response.status.value,
             errorMessage = e.message,
+            data = cachedData,
         )
     } catch (e: ServerResponseException) { // 5xx errors
 
         NetworkResult.Error(
             errorCode = e.response.status.value,
             errorMessage = e.message,
+            data = cachedData,
         )
     } catch (e: Exception) {
         NetworkResult.Error(
             errorCode = 0,
             errorMessage = e.message ?: "An unknown error occurred",
+            data = cachedData,
         )
     }
 }
@@ -102,11 +113,21 @@ fun divideIntoSmallerParagraph(paragraph: String, linesPerParagraph: Int): Strin
     return smallerParagraphs.joinToString("\n\n\n")
 }
 
-fun String.getEncodedName(): String {
+/*fun String.getEncodedName(): String {
     return this.replace(" ", "%20")
 }
+
 fun String.getEncodedWord(): String {
     return this.replace(" ", "+")
+}*/
+
+@Composable
+fun <T> ObserveAsEvents(flow: Flow<T>, onEvent: (T) -> Unit) {
+    LaunchedEffect(flow) {
+        withContext(Dispatchers.Main.immediate) {
+            flow.collect(onEvent)
+        }
+    }
 }
 
 

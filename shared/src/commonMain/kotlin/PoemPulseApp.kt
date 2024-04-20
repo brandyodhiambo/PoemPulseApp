@@ -1,4 +1,3 @@
-
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -17,28 +16,28 @@ import presentation.main.MainScreen
 fun PoemPulseApp(
     mainViewModel: MainViewModel = koinInject()
 ) {
-    val darkTheme = when(mainViewModel.appTheme.collectAsState().value){
-        1->true
-        else->false
+    val darkTheme = when (mainViewModel.appTheme.collectAsState().value) {
+        1 -> true
+        else -> false
     }
 
-  KoinContext {
-      PoemPulseTheme(
-          useDarkTheme = darkTheme
-      ){
-          StatusBarColors(
-              statusBarColor = MaterialTheme.colorScheme.background,
-              navBarColor = MaterialTheme.colorScheme.background,
-          )
-          Navigator(
-              screen = LandingScreen(),
-              content = { navigator ->
-                  ProvideAppNavigator(
-                      navigator = navigator,
-                      content = { SlideTransition(navigator = navigator) },
-                  )
-              },
-          )
-      }
-  }
+    KoinContext {
+        PoemPulseTheme(
+            useDarkTheme = darkTheme
+        ) {
+            StatusBarColors(
+                statusBarColor = MaterialTheme.colorScheme.background,
+                navBarColor = MaterialTheme.colorScheme.background,
+            )
+            Navigator(
+                screen = LandingScreen(),
+                content = { navigator ->
+                    ProvideAppNavigator(
+                        navigator = navigator,
+                        content = { SlideTransition(navigator = navigator) },
+                    )
+                },
+            )
+        }
+    }
 }

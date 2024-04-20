@@ -23,6 +23,8 @@ import domain.usecase.GetGivenWordTitleUseCase
 import domain.usecase.GetPoemTitleUseCase
 import domain.usecase.GetTitleLineUseCase
 import domain.usecase.GetTodayPoemUseCase
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
@@ -45,7 +47,7 @@ fun commonModule() = module {
     * http client
     * */
     single {
-        httpClient {
+        HttpClient(CIO) {
             defaultRequest {
                 url {
                     host = BASE_URL

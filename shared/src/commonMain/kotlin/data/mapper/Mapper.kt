@@ -25,14 +25,14 @@ fun Author.toAuthorEntity() = AuthorEntity(
 fun TodayPoemDto.toDomain() = TodayPoem(
     author = author,
     linecount = linecount,
-    lines = lines.joinToString(","),
+    lines = lines,
     title = title,
 )
 
 fun TodayPoem.toTodayPoemEntity() = TodayPoemEntity(
     author = author,
     linecount = linecount,
-    lines = lines,
+    lines = lines.joinToString(","),
     title = title,
     id = (1..1000).random()
 )
@@ -40,7 +40,7 @@ fun TodayPoem.toTodayPoemEntity() = TodayPoemEntity(
 fun TodayPoemEntity.toDomain() = TodayPoem(
     author = author,
     linecount = linecount,
-    lines = lines,
+    lines = lines.split(","),
     title = title,
 )
 

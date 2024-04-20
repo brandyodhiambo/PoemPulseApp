@@ -16,12 +16,17 @@ class TodayPoemDao(
         dbQuery.getAllTodayPoem().executeAsList()
     }
 
-    suspend fun insertTodayPoem(todayPoemEntity: TodayPoemEntity) = withContext(Dispatchers.IO){
+    suspend fun insertTodayPoem(
+        author: String,
+        linecount: String,
+        lines: String,
+        title: String
+    ) = withContext(Dispatchers.IO){
         dbQuery.insertTodayPoem(
-            todayPoemEntity.author,
-            todayPoemEntity.linecount,
-            todayPoemEntity.lines,
-            todayPoemEntity.title
+            author = author,
+            linecount = linecount,
+            lines = lines,
+            title = title
         )
     }
 

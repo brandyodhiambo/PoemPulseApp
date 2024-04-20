@@ -2,12 +2,10 @@ package data.repository
 
 import ApiService
 import NetworkResult
-import app.cash.sqldelight.coroutines.asFlow
-import app.cash.sqldelight.coroutines.mapToList
-import com.brandyodhiambo.poempulse.database.PoemDatabase
 import data.local.dao.AuthorDao
 import data.local.dao.TitleDao
 import data.local.dao.TodayPoemDao
+import database.TodayPoemEntity
 import domain.model.author.Author
 import domain.model.author.AuthorPoem
 import domain.model.givenwordpoem.GivenWordPoem
@@ -100,25 +98,36 @@ class PoemPulseRepositoryImpl(
         emit(response)
     }
 
-    override suspend fun getTodayPoem(dayNumber: Int): Flow<NetworkResult<List<TodayPoem>>>  = flow{
-        val response = safeApiCall {
-            val cachedTodayPoem = todayPoemDao.getTodayPoem()
+    override suspend fun getTodayPoem(randomPoemCount: Int): NetworkResult<List<TodayPoem>> {
+        /**
+         * Load data from the cache
+         * Make API call,
+         * If.. successful
+         *  - Delete data from cache
+         *  - Write the new data from API
+         *  - Read from cache and return to user
+         * If.. unsuccessful
+         *  - Return data from cache
+         */
+        val cachedTodayPoem = todayPoemDao.getTodayPoem().map { it.toDomain() }
 
-            if(cachedTodayPoem.isEmpty()){
-                val apiTodayPoem = apiService.getTodayPoem(dayNumber).map { it.toDomain() }
-                apiTodayPoem.forEach {
-                    todayPoemDao.insertTodayPoem(it.toTodayPoemEntity())
-                }
-            } else{
-                todayPoemDao.deleteTodayPoem()
-                val apiTodayPoem = apiService.getTodayPoem(dayNumber).map { it.toDomain() }
-                apiTodayPoem.forEach {
-                    todayPoemDao.insertTodayPoem(it.toTodayPoemEntity())
-                }
+        return safeApiCall(
+            cachedData = cachedTodayPoem
+        ) {
+            val apiTodayPoem = apiService.getTodayPoem(randomPoemCount)
+            todayPoemDao.deleteTodayPoem()
+            apiTodayPoem.forEach {
+                todayPoemDao.insertTodayPoem(
+                    linecount = it.linecount,
+                    title = it.title,
+                    lines = it.lines.joinToString(","),
+                    author = it.author
+                )
             }
-            todayPoemDao.getTodayPoem().map { it.toDomain() }
+            val newCachedData = todayPoemDao.getTodayPoem()
+
+            newCachedData.map { it.toDomain() }
         }
-        emit(response)
     }
 
     override suspend fun getAuthorPoem(authorName: String): Flow<NetworkResult<List<AuthorPoem>>> = flow {

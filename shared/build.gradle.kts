@@ -43,6 +43,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-json:2.3.6")
                 implementation("io.ktor:ktor-client-logging:2.3.6")
                 implementation("io.ktor:ktor-client-serialization:2.3.6")
+                implementation("io.ktor:ktor-client-cio:2.3.6")
 
                 // Voyager
                 val voyagerVersion = "1.0.0-rc10"

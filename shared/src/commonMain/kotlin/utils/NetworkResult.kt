@@ -4,6 +4,13 @@ sealed class NetworkResult<T>(
     val errorMessage: String? = null
 ) {
     class Success<T>(data: T) : NetworkResult<T>(data)
-    class Error<T>(errorCode: Int, errorMessage: String?) :
-            NetworkResult<T>(errorCode = errorCode, errorMessage = errorMessage)
+    class Error<T>(
+        errorCode: Int,
+        errorMessage: String?,
+        data: T? = null,
+    ) : NetworkResult<T>(
+        errorCode = errorCode,
+        errorMessage = errorMessage,
+        data = data
+    )
 }

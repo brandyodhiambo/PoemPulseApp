@@ -8,11 +8,13 @@ import domain.model.title.TitleLine
 import domain.usecase.GetGivenWordTitleUseCase
 import domain.usecase.GetPoemTitleUseCase
 import domain.usecase.GetTitleLineUseCase
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import utils.UiEvents
@@ -27,8 +29,8 @@ class TitleViewModel(
     private val _titleState = MutableStateFlow(TitleState())
     val titleState get() = _titleState.asStateFlow()
 
-    private val _eventFlow = MutableSharedFlow<UiEvents>()
-    val eventFlow get() = _eventFlow.asSharedFlow()
+    private val _eventsFlow = Channel<UiEvents>()
+    val eventsFlow get() = _eventsFlow.receiveAsFlow()
 
     init {
         getTitle()
@@ -47,7 +49,7 @@ class TitleViewModel(
                                 error = result.errorMessage
                             )
                         }
-                        _eventFlow.emit(
+                        _eventsFlow.trySend(
                             UiEvents.SnackbarEvent(
                                 message = result.errorMessage ?: "Unknown error occurred"
                             )
@@ -84,7 +86,7 @@ class TitleViewModel(
                             )
                         }
 
-                        _eventFlow.emit(
+                        _eventsFlow.trySend(
                             UiEvents.SnackbarEvent(
                                 message = result.errorMessage ?:"Unknown error occurred"
                             )

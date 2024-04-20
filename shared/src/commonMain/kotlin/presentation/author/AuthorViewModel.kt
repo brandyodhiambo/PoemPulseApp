@@ -6,11 +6,14 @@ import domain.model.author.Author
 import domain.model.author.AuthorPoem
 import domain.usecase.GetAuthorPoemUseCase
 import domain.usecase.GetAuthorUseCase
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import utils.UiEvents
@@ -19,6 +22,12 @@ class AuthorViewModel(
     private val getAuthorUseCase: GetAuthorUseCase,
     private val getAuthorPoemUseCase: GetAuthorPoemUseCase,
 ) : ScreenModel {
+
+    private val _eventsFlow = Channel<UiEvents>()
+    val eventsFlow get() = _eventsFlow.receiveAsFlow()
+
+    private val _authorUiState = MutableStateFlow(AuthorState())
+    val authorUiState get() = _authorUiState.asStateFlow()
 
     private val viewModelScope = screenModelScope
     val authorImage = listOf(
@@ -43,18 +52,14 @@ class AuthorViewModel(
         "poemauthor20.jpeg",
     )
 
-    private val _eventsFlow = MutableSharedFlow<UiEvents>()
-    val eventsFlow get() = _eventsFlow.asSharedFlow()
-
-    private val _authorUiState = MutableStateFlow(AuthorState())
-    val authorUiState get() = _authorUiState.asStateFlow()
     init {
         getAuthors()
     }
     private fun getAuthors() {
+        _authorUiState.update { it.copy(isLoading = true) }
+
         viewModelScope.launch {
-            _authorUiState.update { it.copy(isLoading = true) }
-            getAuthorUseCase.invoke().collectLatest { result ->
+            getAuthorUseCase().collectLatest { result ->
                 when (result) {
                     is NetworkResult.Error -> {
                         _authorUiState.update {
@@ -64,7 +69,7 @@ class AuthorViewModel(
                             )
                         }
 
-                        _eventsFlow.emit(
+                        _eventsFlow.trySend(
                             UiEvents.SnackbarEvent(
                                 result.errorMessage ?: "Unknown Error Occurred",
                             ),
@@ -87,9 +92,9 @@ class AuthorViewModel(
     }
 
     fun getAuthorPoem(authorName: String) {
-        viewModelScope.launch {
-            _authorUiState.update { it.copy(isLoading = true) }
+        _authorUiState.update { it.copy(isLoading = true) }
 
+        viewModelScope.launch {
             getAuthorPoemUseCase.invoke(authorName).collectLatest { result ->
                 when (result) {
                     is NetworkResult.Error -> {
@@ -100,7 +105,7 @@ class AuthorViewModel(
                             )
                         }
 
-                        _eventsFlow.emit(
+                        _eventsFlow.trySend(
                             UiEvents.SnackbarEvent(
                                 result.errorMessage ?: "Unknown Error Occurred",
                             ),

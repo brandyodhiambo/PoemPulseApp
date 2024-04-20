@@ -1,6 +1,7 @@
 package presentation.title
 
 import LocalAppNavigator
+import ObserveAsEvents
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,12 +30,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.currentOrThrow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
@@ -48,26 +51,21 @@ fun TitleScreen(
     val navigator = LocalAppNavigator.currentOrThrow
     val titleState = titleViewModel.titleState.collectAsState().value
     val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
-    StatusBarColors(
-        statusBarColor = MaterialTheme.colorScheme.background,
-        navBarColor = MaterialTheme.colorScheme.background,
-    )
-
-    LaunchedEffect(key1 = true, block = {
-        titleViewModel.eventFlow.collectLatest { event ->
-            when (event) {
-                is UiEvents.SnackbarEvent -> {
+    ObserveAsEvents(titleViewModel.eventsFlow) { event ->
+        when (event) {
+            is UiEvents.SnackbarEvent -> {
+                scope.launch {
                     snackbarHostState.showSnackbar(
                         message = event.message,
                     )
                 }
-
-                else -> {}
             }
 
+            else -> {}
         }
-    })
+    }
 
     TitleScreenContent(
         titleState = titleState,
@@ -76,8 +74,6 @@ fun TitleScreen(
             navigator.push(TitlePoemScreen(it))
         }
     )
-
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -148,7 +144,7 @@ fun TitleCard(
             .padding(8.dp)
             .fillMaxWidth()
             .clickable {
-                onTitleClicked(title)
+                onTitleClicked(title.removeQuotes())
             },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -179,4 +175,8 @@ fun TitleCard(
             )
         }
     }
+}
+
+fun String.removeQuotes(): String {
+    return replace("\"", "")
 }

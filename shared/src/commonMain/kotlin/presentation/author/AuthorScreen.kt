@@ -3,6 +3,7 @@ package presentation.author
 import AuthorState
 import AuthorViewModel
 import LocalAppNavigator
+import ObserveAsEvents
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -31,9 +32,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,41 +43,34 @@ import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.currentOrThrow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
-import platform.StatusBarColors
 import utils.UiEvents
 
 @Composable
 fun AuthorScreen(
     authorViewModel: AuthorViewModel = koinInject()
 ) {
-    StatusBarColors(
-        statusBarColor = MaterialTheme.colorScheme.background,
-        navBarColor = MaterialTheme.colorScheme.background,
-    )
-
     val navigator = LocalAppNavigator.currentOrThrow
     val snackbarHostState = remember { SnackbarHostState() }
     val authorState = authorViewModel.authorUiState.collectAsState().value
+    val scope = rememberCoroutineScope()
 
-
-    LaunchedEffect(key1 = true, block = {
-        authorViewModel.eventsFlow.collectLatest { event ->
-            when (event) {
-                is UiEvents.SnackbarEvent -> {
+    ObserveAsEvents(authorViewModel.eventsFlow) { event ->
+        when (event) {
+            is UiEvents.SnackbarEvent -> {
+                scope.launch {
                     snackbarHostState.showSnackbar(
                         message = event.message,
                     )
                 }
-
-                else -> {}
             }
 
+            else -> {}
         }
-    })
+    }
 
     AuthorScreenContent(
         authorImage = authorViewModel.authorImage,
@@ -85,10 +79,7 @@ fun AuthorScreen(
         onAuthorClicked = {
             navigator.push(AuthorPoemScreen(it))
         }
-
     )
-
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -137,7 +128,7 @@ fun AuthorScreenContent(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 items(authorState.author) { author ->
-                    authorCard(
+                    AuthorCard(
                         image = authorImage.random(),
                         authorName = author,
                         onAuthorClicked = onAuthorClicked
@@ -148,22 +139,24 @@ fun AuthorScreenContent(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
+@OptIn(ExperimentalResourceApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun authorCard(
+fun AuthorCard(
+    modifier: Modifier = Modifier,
     image: String,
     authorName: String,
     onAuthorClicked: (String) -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth()
-            .clickable {
-                onAuthorClicked(authorName)
-            },
+        modifier = modifier
+            .fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
             contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        ),
+        onClick = {
+            onAuthorClicked(authorName)
+        }
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(16.dp),

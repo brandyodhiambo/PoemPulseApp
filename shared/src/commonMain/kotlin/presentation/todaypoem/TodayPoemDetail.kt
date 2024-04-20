@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,15 +36,13 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import divideIntoSmallerParagraph
-import getEncodedName
+import domain.model.todaypoem.TodayPoem
 import org.koin.compose.koinInject
 import presentation.component.PoemCard
 import presentation.component.poemBody
 
 data class TodayPoemDetail(
-    val title: String,
-    val line: String,
-    val author: String
+    val poem: TodayPoem
 ) : Screen {
     @Composable
     override fun Content() {
@@ -51,14 +50,14 @@ data class TodayPoemDetail(
         val navigator = LocalNavigator.currentOrThrow
         val authorState = authorViewModel.authorUiState.collectAsState().value
 
-
-
-        authorViewModel.getAuthorPoem(authorName = author.getEncodedName())
+        LaunchedEffect(authorViewModel) {
+            authorViewModel.getAuthorPoem(authorName = poem.author)
+        }
 
         PoemDetailContent(
-            title = title,
-            line = line,
-            author = author,
+            title = poem.title,
+            line = poem.lines.joinToString(","),
+            author = poem.author,
             authorState = authorState,
             onBackPressed = {
                 navigator.pop()
