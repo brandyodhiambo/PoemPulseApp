@@ -1,6 +1,6 @@
 package com.brandyodhiambo
 
-import MainView
+import com.brandyodhiambo.poempulse.MainView
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity

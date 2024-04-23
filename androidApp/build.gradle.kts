@@ -16,7 +16,7 @@ kotlin {
 }
 
 android {
-    compileSdk = (findProperty("android.compileSdk") as String).toInt()
+    compileSdk = 34
     namespace = "com.brandyodhiambo"
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -27,6 +27,7 @@ android {
         targetSdk = (findProperty("android.targetSdk") as String).toInt()
         versionCode = 1
         versionName = "1.0"
+        signingConfig = signingConfigs.getByName("debug")
     }
 
     buildTypes{
@@ -42,6 +43,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+    buildToolsVersion = "34.0.0"
     kotlin {
         jvmToolchain(17)
     }

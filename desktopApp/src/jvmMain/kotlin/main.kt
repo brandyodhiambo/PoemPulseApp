@@ -7,7 +7,8 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
-import di.initKoin
+import com.brandyodhiambo.poempulse.MainView
+import com.brandyodhiambo.poempulse.di.initKoin
 import org.koin.core.Koin
 
 lateinit var koin: Koin
