@@ -1,9 +1,9 @@
 plugins {
-    kotlin("multiplatform")
-    id("com.android.library")
-    id("org.jetbrains.compose")
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.20"
-    id("app.cash.sqldelight") version "2.0.1"
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.sqlDelight.plugin)
 }
 
 kotlin {
@@ -25,6 +25,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+                // Compose Multiplatform
                 implementation(compose.runtime)
                 implementation(compose.foundation)
                 implementation(compose.material)
@@ -33,24 +34,23 @@ kotlin {
                 implementation(compose.components.resources)
 
                 // Koin
-                api("io.insert-koin:koin-core:3.5.0")
-                api("io.insert-koin:koin-compose:1.1.0")
+                api(libs.koin.core)
+                api(libs.koin.compose)
 
                 // Ktor
-                implementation("io.ktor:ktor-client-core:2.3.6")
-                implementation("io.ktor:ktor-client-content-negotiation:2.3.6")
-                implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.6")
-                implementation("io.ktor:ktor-client-json:2.3.6")
-                implementation("io.ktor:ktor-client-logging:2.3.6")
-                implementation("io.ktor:ktor-client-serialization:2.3.6")
-                implementation("io.ktor:ktor-client-cio:2.3.6")
+                implementation(libs.ktor.client.core)
+                implementation(libs.ktor.client.content.negotiation)
+                implementation(libs.ktor.serialization.kotlinx.json)
+                implementation(libs.ktor.client.json)
+                implementation(libs.ktor.client.logging)
+                implementation(libs.ktor.client.serialization)
+                implementation(libs.ktor.client.cio)
 
                 // Voyager
-                val voyagerVersion = "1.0.0-rc10"
-                implementation("cafe.adriel.voyager:voyager-navigator:$voyagerVersion")
-                implementation("cafe.adriel.voyager:voyager-bottom-sheet-navigator:$voyagerVersion")
-                implementation("cafe.adriel.voyager:voyager-tab-navigator:$voyagerVersion")
-                implementation("cafe.adriel.voyager:voyager-transitions:$voyagerVersion")
+                implementation(libs.voyager.navigator)
+                implementation(libs.voyager.bottom.sheet.navigator)
+                implementation(libs.voyager.tab.navigator)
+                implementation(libs.voyager.transitions)
 
                 //sql delight
                 val sqldelight = "2.0.1"
@@ -60,29 +60,28 @@ kotlin {
 
                 // multiplatform settings
                 val multiplatformsetting = "1.1.1"
-                api("com.russhwolf:multiplatform-settings-no-arg:$multiplatformsetting")
-                api("com.russhwolf:multiplatform-settings-coroutines:$multiplatformsetting")
+                api(libs.mutliplatform.arg)
+                api(libs.mutliplatform.coroutine)
 
                 // window size
-                implementation("dev.chrisbanes.material3:material3-window-size-class-multiplatform:0.3.1")
+                implementation(libs.window.size)
 
                 //Kottie animation
-                implementation("io.github.ismai117:kottie:1.3.1")
+                implementation(libs.kottie.animation)
             }
         }
-        val androidMain by getting {
-            dependencies {
-                api("androidx.activity:activity-compose:1.8.2")
-                api("androidx.appcompat:appcompat:1.6.1")
-                api("androidx.core:core-ktx:1.12.0")
+            androidMain.dependencies {
+                api(libs.compose.activity)
+                api(libs.appCompact)
+                api(libs.core.ktx)
 
-                api("io.ktor:ktor-client-android:2.3.6")
-                implementation("io.coil-kt:coil-compose:2.5.0")
+                api(libs.ktor.client.android)
+                implementation(libs.coil.compose)
                 implementation("app.cash.sqldelight:android-driver:2.0.1")
-                implementation("com.google.accompanist:accompanist-systemuicontroller:0.32.0")
+                implementation(libs.accompanist.systemuicontroller)
 
             }
-        }
+
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
@@ -92,18 +91,16 @@ kotlin {
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
             dependencies{
-                implementation("io.ktor:ktor-client-darwin:2.3.6")
+                implementation(libs.ktor.client.darwin)
                 implementation("app.cash.sqldelight:native-driver:2.0.1")
             }
         }
-        val desktopMain by getting {
-            dependencies {
+            jvmMain.dependencies {
                 implementation(compose.desktop.common)
-                api("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.7.3")
-                implementation("io.ktor:ktor-client-java:2.3.6")
+                api(libs.swing)
+                implementation(libs.ktor.client.java)
                 implementation("app.cash.sqldelight:sqlite-driver:2.0.1")
             }
-        }
     }
 }
 
@@ -117,10 +114,6 @@ android {
 
     defaultConfig {
         minSdk = (findProperty("android.minSdk") as String).toInt()
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlin {
         jvmToolchain(17)
