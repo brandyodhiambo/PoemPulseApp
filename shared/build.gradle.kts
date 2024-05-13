@@ -9,7 +9,7 @@ plugins {
 kotlin {
     androidTarget()
 
-    jvm("desktop")
+    jvm()
 
     listOf(
         iosX64(),
@@ -23,8 +23,7 @@ kotlin {
     }
 
     sourceSets {
-        val commonMain by getting {
-            dependencies {
+            commonMain.dependencies {
                 // Compose Multiplatform
                 implementation(compose.runtime)
                 implementation(compose.foundation)
@@ -69,7 +68,7 @@ kotlin {
                 //Kottie animation
                 implementation(libs.kottie.animation)
             }
-        }
+
             androidMain.dependencies {
                 api(libs.compose.activity)
                 api(libs.appCompact)
@@ -82,19 +81,22 @@ kotlin {
 
             }
 
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-        val iosMain by creating {
-            dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
-            dependencies{
+//        val iosX64Main by getting
+//        val iosArm64Main by getting
+//        val iosSimulatorArm64Main by getting
+//        val iosMain by creating {
+//            dependsOn(commonMain)
+//            iosX64Main.dependsOn(this)
+//            iosArm64Main.dependsOn(this)
+//            iosSimulatorArm64Main.dependsOn(this)
+            iosMain.dependencies{
                 implementation(libs.ktor.client.darwin)
                 implementation("app.cash.sqldelight:native-driver:2.0.1")
+
+                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+                implementation(compose.components.resources)
             }
-        }
+       // }
             jvmMain.dependencies {
                 implementation(compose.desktop.common)
                 api(libs.swing)
