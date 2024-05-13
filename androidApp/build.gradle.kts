@@ -1,22 +1,21 @@
 plugins {
-    kotlin("multiplatform")
-    id("com.android.application")
-    id("org.jetbrains.compose")
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.compose.multiplatform)
 }
 
 kotlin {
     androidTarget()
     sourceSets {
-        val androidMain by getting {
-            dependencies {
+            androidMain.dependencies {
                 implementation(project(":shared"))
             }
         }
     }
-}
+
 
 android {
-    compileSdk = 34
+    compileSdk = (findProperty("android.compileSdk") as String).toInt()
     namespace = "com.brandyodhiambo"
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -32,7 +31,8 @@ android {
 
     buildTypes{
         getByName("release"){
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
         }
     }
 
@@ -50,6 +50,6 @@ android {
 }
 
 dependencies {
-    implementation("io.insert-koin:koin-core:3.5.0")
-    implementation("io.insert-koin:koin-android:3.5.0")
+    implementation(libs.koin.android)
+    implementation(libs.koin.core)
 }
