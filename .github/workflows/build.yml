@@ -2,9 +2,9 @@ name: Build
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ main,develop ]
   pull_request:
-    branches: [ develop ]
+    branches: [ main,develop ]
 
 concurrency:
   group: build-${{ github.ref }}
