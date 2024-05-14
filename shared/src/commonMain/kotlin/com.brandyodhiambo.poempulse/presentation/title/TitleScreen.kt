@@ -1,7 +1,20 @@
+/*
+ * Copyright (C)2024 Brandy Odhiambo
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.brandyodhiambo.poempulse.presentation.title
 
-import com.brandyodhiambo.poempulse.utils.LocalAppNavigator
-import com.brandyodhiambo.poempulse.utils.ObserveAsEvents
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -37,16 +50,18 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.brandyodhiambo.poempulse.utils.LocalAppNavigator
+import com.brandyodhiambo.poempulse.utils.ObserveAsEvents
+import com.brandyodhiambo.poempulse.utils.UiEvents
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
-import com.brandyodhiambo.poempulse.utils.UiEvents
 
 @Composable
 fun TitleScreen(
     titleViewModel: TitleViewModel = koinInject()
-){
+) {
     val navigator = LocalAppNavigator.currentOrThrow
     val titleState = titleViewModel.titleState.collectAsState().value
     val snackbarHostState = remember { SnackbarHostState() }
@@ -80,7 +95,7 @@ fun TitleScreen(
 fun TitleScreenContent(
     titleState: TitleState,
     snackbarHostState: @Composable () -> Unit,
-    onPoemTitleClicked:(String)->Unit
+    onPoemTitleClicked: (String) -> Unit
 ) {
 
     Scaffold(
@@ -88,7 +103,7 @@ fun TitleScreenContent(
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background
-                ) ,
+                ),
                 title = {
                     Text(
                         text = "Poem's Titles",
@@ -99,10 +114,10 @@ fun TitleScreenContent(
             )
         },
         snackbarHost = snackbarHostState
-    ) { paddingvalues->
+    ) { paddingvalues ->
         Box(modifier = Modifier.fillMaxSize().padding(paddingvalues)) {
 
-            if(titleState.isLoading){
+            if (titleState.isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center),
                 )
@@ -121,21 +136,20 @@ fun TitleScreenContent(
                 )
             }
 
-         if(titleState.title.isNotEmpty() && titleState.isLoading.not()){
-             LazyVerticalGrid(
-                 columns = GridCells.Fixed(2),
-                 contentPadding = PaddingValues(8.dp),
-                 verticalArrangement = Arrangement.spacedBy(8.dp),
-             ) {
-                 items(titleState.title) { title ->
-                     TitleCard(
-                         title = title,
-                         onTitleClicked = onPoemTitleClicked
-                     )
-                 }
-             }
-         }
-
+            if (titleState.title.isNotEmpty() && titleState.isLoading.not()) {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    contentPadding = PaddingValues(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    items(titleState.title) { title ->
+                        TitleCard(
+                            title = title,
+                            onTitleClicked = onPoemTitleClicked
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -143,8 +157,8 @@ fun TitleScreenContent(
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun TitleCard(
-    title:String,
-    onTitleClicked:(String)->Unit
+    title: String,
+    onTitleClicked: (String) -> Unit
 ) {
     Card(
         modifier = Modifier
