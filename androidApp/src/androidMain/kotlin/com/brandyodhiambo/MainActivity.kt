@@ -18,7 +18,7 @@ package com.brandyodhiambo
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-//import com.brandyodhiambo.poempulse.MainView
+// import com.brandyodhiambo.poempulse.MainView
 import com.brandyodhiambo.poempulse.PoemPulseApp
 
 class MainActivity : AppCompatActivity() {
