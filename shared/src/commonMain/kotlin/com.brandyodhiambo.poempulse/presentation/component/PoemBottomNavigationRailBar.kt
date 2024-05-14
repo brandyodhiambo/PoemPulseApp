@@ -1,6 +1,20 @@
+/*
+ * Copyright (C)2024 Brandy Odhiambo
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.brandyodhiambo.poempulse.presentation.component
 
-import com.brandyodhiambo.poempulse.utils.FilledIcon
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -14,6 +28,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
+import com.brandyodhiambo.poempulse.utils.FilledIcon
 
 @Composable
 fun PoemBottomNavigationRailBar(
@@ -25,7 +40,7 @@ fun PoemBottomNavigationRailBar(
         modifier = modifier.fillMaxHeight().alpha(0.95F),
         containerColor = MaterialTheme.colorScheme.surface,
         contentColor = MaterialTheme.colorScheme.onSurface,
-        header = {  },
+        header = { },
     ) {
         navRailItems.forEach { item ->
             val isSelected = tabNavigator.current == item

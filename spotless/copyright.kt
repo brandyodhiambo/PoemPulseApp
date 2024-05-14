@@ -1,5 +1,5 @@
 /*
- * Copyright (C)2024 Brandy Odhiambo
+ * Copyright (C)$YEAR Brandy Odhiambo
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +13,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.brandyodhiambo.poempulse.di
-
-import org.koin.core.module.Module
-
-expect fun platformModule(): Module

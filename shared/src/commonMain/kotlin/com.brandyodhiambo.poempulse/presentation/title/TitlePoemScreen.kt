@@ -1,6 +1,20 @@
+/*
+ * Copyright (C)2024 Brandy Odhiambo
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.brandyodhiambo.poempulse.presentation.title
 
-import com.brandyodhiambo.poempulse.utils.ObserveAsEvents
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -32,21 +46,22 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.brandyodhiambo.poempulse.presentation.component.PoemCard
+import com.brandyodhiambo.poempulse.utils.ObserveAsEvents
+import com.brandyodhiambo.poempulse.utils.UiEvents
 import com.brandyodhiambo.poempulse.utils.divideIntoSmallerParagraph
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
-import com.brandyodhiambo.poempulse.presentation.component.PoemCard
-import com.brandyodhiambo.poempulse.utils.UiEvents
 
 data class TitlePoemScreen(
-    val title:String,
+    val title: String,
 ) : Screen {
 
     @Composable
     override fun Content() {
         val titleViewModel: TitleViewModel = koinInject()
         val navigator = LocalNavigator.currentOrThrow
-        val snackBarHostState = remember{SnackbarHostState()}
+        val snackBarHostState = remember { SnackbarHostState() }
         val titleState = titleViewModel.titleState.collectAsState().value
         val scope = rememberCoroutineScope()
 
@@ -81,9 +96,9 @@ data class TitlePoemScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TitlePoemContent(
-    title:String,
+    title: String,
     titleState: TitleState,
-    onBackPressed: () ->Unit
+    onBackPressed: () -> Unit
 ) {
 
     Scaffold(
@@ -128,18 +143,18 @@ fun TitlePoemContent(
                 )
             }
 
-           if(titleState.titleLines.isNotEmpty() && titleState.isLoading.not()){
-               LazyVerticalGrid(
-                   columns = GridCells.Fixed(1),
-                   contentPadding = PaddingValues(16.dp),
-                   verticalArrangement = Arrangement.spacedBy(16.dp),
-               ) {
-                   items(titleState.titleLines) { poems ->
-                       val paragraphs = divideIntoSmallerParagraph(poems.lines.joinToString(","), 5)
-                       PoemCard(poems.author, paragraphs)
-                   }
-               }
-           }
+            if (titleState.titleLines.isNotEmpty() && titleState.isLoading.not()) {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(1),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    items(titleState.titleLines) { poems ->
+                        val paragraphs = divideIntoSmallerParagraph(poems.lines.joinToString(","), 5)
+                        PoemCard(poems.author, paragraphs)
+                    }
+                }
+            }
         }
     }
 }

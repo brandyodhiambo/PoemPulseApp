@@ -1,3 +1,18 @@
+/*
+ * Copyright (C)2024 Brandy Odhiambo
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.brandyodhiambo.poempulse.presentation.todaypoem
 
 import AuthorState
@@ -35,11 +50,11 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import com.brandyodhiambo.poempulse.utils.divideIntoSmallerParagraph
 import com.brandyodhiambo.poempulse.domain.model.todaypoem.TodayPoem
-import org.koin.compose.koinInject
 import com.brandyodhiambo.poempulse.presentation.component.PoemCard
 import com.brandyodhiambo.poempulse.presentation.component.poemBody
+import com.brandyodhiambo.poempulse.utils.divideIntoSmallerParagraph
+import org.koin.compose.koinInject
 
 data class TodayPoemDetail(
     val poem: TodayPoem
@@ -90,7 +105,6 @@ data class TodayPoemDetail(
                             ),
                             color = MaterialTheme.colorScheme.onBackground
                         )
-
                     },
                     navigationIcon = {
                         IconButton(
@@ -105,7 +119,7 @@ data class TodayPoemDetail(
                     }
                 )
             },
-        ) {paddingValue->
+        ) { paddingValue ->
             Box(modifier = Modifier.fillMaxSize().padding(paddingValue)) {
 
                 if (authorState.isLoading) {
@@ -121,7 +135,7 @@ data class TodayPoemDetail(
                     )
                 }
 
-                if(authorState.authorPoem.isNotEmpty() && authorState.isLoading.not()){
+                if (authorState.authorPoem.isNotEmpty() && authorState.isLoading.not()) {
                     LazyColumn(
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -152,8 +166,6 @@ data class TodayPoemDetail(
                     }
                 }
             }
-
         }
     }
-
 }
