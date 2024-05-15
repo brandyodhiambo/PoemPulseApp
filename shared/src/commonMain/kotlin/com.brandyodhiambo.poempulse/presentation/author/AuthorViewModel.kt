@@ -65,7 +65,7 @@ class AuthorViewModel(
         getAuthors()
     }
 
-    private fun getAuthors() {
+    fun getAuthors() {
         viewModelScope.launch {
             _authorUiState.update { it.copy(isLoading = true) }
             when (val result = getAuthorUseCase()) {

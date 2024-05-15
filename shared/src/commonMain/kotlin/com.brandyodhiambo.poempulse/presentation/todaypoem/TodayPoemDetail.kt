@@ -31,7 +31,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -51,6 +50,8 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.brandyodhiambo.poempulse.domain.model.todaypoem.TodayPoem
+import com.brandyodhiambo.poempulse.presentation.component.DataNotFound
+import com.brandyodhiambo.poempulse.presentation.component.LoadingAnimation
 import com.brandyodhiambo.poempulse.presentation.component.PoemCard
 import com.brandyodhiambo.poempulse.presentation.component.poemBody
 import com.brandyodhiambo.poempulse.utils.divideIntoSmallerParagraph
@@ -123,16 +124,14 @@ data class TodayPoemDetail(
             Box(modifier = Modifier.fillMaxSize().padding(paddingValue)) {
 
                 if (authorState.isLoading) {
-                    CircularProgressIndicator(
+                    LoadingAnimation(
                         modifier = Modifier.align(Alignment.Center),
+                        circleSize = 16.dp,
                     )
                 }
 
                 if (authorState.error != null) {
-                    Text(
-                        text = authorState.error,
-                        modifier = Modifier.align(Alignment.Center),
-                    )
+                    DataNotFound(authorState.error)
                 }
 
                 if (authorState.authorPoem.isNotEmpty() && authorState.isLoading.not()) {

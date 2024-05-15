@@ -23,11 +23,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -46,6 +49,8 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.brandyodhiambo.poempulse.presentation.component.DataNotFound
+import com.brandyodhiambo.poempulse.presentation.component.LoadingAnimation
 import com.brandyodhiambo.poempulse.presentation.component.PoemCard
 import com.brandyodhiambo.poempulse.utils.ObserveAsEvents
 import com.brandyodhiambo.poempulse.utils.UiEvents
@@ -88,17 +93,21 @@ data class TitlePoemScreen(
             titleState = titleState,
             onBackPressed = {
                 navigator.pop()
+            },
+            onRefreshPoems = {
+                titleViewModel.getTitleLine(title)
             }
         )
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun TitlePoemContent(
     title: String,
     titleState: TitleState,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    onRefreshPoems: () -> Unit,
 ) {
 
     Scaffold(
@@ -128,19 +137,26 @@ fun TitlePoemContent(
             )
         },
     ) { paddingValue ->
-        Box(modifier = Modifier.fillMaxSize().padding(paddingValue)) {
+        val pullRefreshState =
+            rememberPullRefreshState(
+                refreshing = false,
+                onRefresh = onRefreshPoems,
+            )
+        Box(
+            modifier = Modifier
+                .pullRefresh(pullRefreshState)
+                .fillMaxSize().padding(paddingValue)
+        ) {
 
             if (titleState.isLoading) {
-                CircularProgressIndicator(
+                LoadingAnimation(
                     modifier = Modifier.align(Alignment.Center),
+                    circleSize = 16.dp,
                 )
             }
 
-            if (titleState.error != null) {
-                Text(
-                    text = titleState.error,
-                    modifier = Modifier.align(Alignment.Center),
-                )
+            if (titleState.titleLines.isEmpty() && titleState.isLoading.not()) {
+                DataNotFound("No poem lines")
             }
 
             if (titleState.titleLines.isNotEmpty() && titleState.isLoading.not()) {
@@ -155,6 +171,12 @@ fun TitlePoemContent(
                     }
                 }
             }
+
+            PullRefreshIndicator(
+                titleState.isLoading,
+                pullRefreshState,
+                Modifier.align(Alignment.TopCenter),
+            )
         }
     }
 }

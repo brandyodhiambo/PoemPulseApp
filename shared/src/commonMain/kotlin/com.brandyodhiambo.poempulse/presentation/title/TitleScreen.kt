@@ -27,9 +27,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -45,11 +48,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.brandyodhiambo.poempulse.presentation.component.DataNotFound
+import com.brandyodhiambo.poempulse.presentation.component.LoadingAnimation
 import com.brandyodhiambo.poempulse.utils.LocalAppNavigator
 import com.brandyodhiambo.poempulse.utils.ObserveAsEvents
 import com.brandyodhiambo.poempulse.utils.UiEvents
@@ -86,16 +89,20 @@ fun TitleScreen(
         snackbarHostState = { SnackbarHost(snackbarHostState) },
         onPoemTitleClicked = {
             navigator.push(TitlePoemScreen(it))
+        },
+        onRefreshTitles = {
+            titleViewModel.getTitle()
         }
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun TitleScreenContent(
     titleState: TitleState,
     snackbarHostState: @Composable () -> Unit,
-    onPoemTitleClicked: (String) -> Unit
+    onPoemTitleClicked: (String) -> Unit,
+    onRefreshTitles: () -> Unit,
 ) {
 
     Scaffold(
@@ -115,25 +122,26 @@ fun TitleScreenContent(
         },
         snackbarHost = snackbarHostState
     ) { paddingvalues ->
-        Box(modifier = Modifier.fillMaxSize().padding(paddingvalues)) {
+        val pullRefreshState =
+            rememberPullRefreshState(
+                refreshing = false,
+                onRefresh = onRefreshTitles,
+            )
+        Box(
+            modifier = Modifier
+                .pullRefresh(pullRefreshState)
+                .fillMaxSize().padding(paddingvalues)
+        ) {
 
             if (titleState.isLoading) {
-                CircularProgressIndicator(
+                LoadingAnimation(
                     modifier = Modifier.align(Alignment.Center),
+                    circleSize = 16.dp,
                 )
             }
 
             if (titleState.title.isEmpty() && titleState.isLoading.not()) {
-                Text(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .fillMaxWidth(),
-                    text = "No Titles found",
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontSize = 20.sp,
-                        textAlign = TextAlign.Center,
-                    )
-                )
+                DataNotFound("No titles found")
             }
 
             if (titleState.title.isNotEmpty() && titleState.isLoading.not()) {
@@ -150,6 +158,11 @@ fun TitleScreenContent(
                     }
                 }
             }
+            PullRefreshIndicator(
+                titleState.isLoading,
+                pullRefreshState,
+                Modifier.align(Alignment.TopCenter),
+            )
         }
     }
 }
