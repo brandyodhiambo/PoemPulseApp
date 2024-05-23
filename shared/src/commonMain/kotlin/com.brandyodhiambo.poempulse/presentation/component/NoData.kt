@@ -36,6 +36,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import poempulseapp.shared.generated.resources.Res
+import poempulseapp.shared.generated.resources.no_data
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
@@ -50,7 +52,7 @@ fun DataNotFound(
     ) {
         Spacer(modifier = Modifier.height(24.dp))
         Image(
-            painter = painterResource("no_data.png"),
+            painter = painterResource(Res.drawable.no_data),
             contentDescription = "no_data_icon",
             contentScale = ContentScale.Crop,
             modifier = Modifier

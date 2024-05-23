@@ -64,6 +64,7 @@ import com.brandyodhiambo.poempulse.utils.LocalAppNavigator
 import com.brandyodhiambo.poempulse.utils.ObserveAsEvents
 import com.brandyodhiambo.poempulse.utils.UiEvents
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
@@ -107,7 +108,7 @@ fun AuthorScreen(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun AuthorScreenContent(
-    authorImage: List<String>,
+    authorImage: List<DrawableResource>,
     authorState: AuthorState,
     snackbarHostState: @Composable () -> Unit,
     onAuthorClicked: (String) -> Unit,
@@ -183,7 +184,7 @@ fun AuthorScreenContent(
 @Composable
 fun AuthorCard(
     modifier: Modifier = Modifier,
-    image: String,
+    image: DrawableResource,
     authorName: String,
     onAuthorClicked: (String) -> Unit
 ) {
@@ -206,7 +207,7 @@ fun AuthorCard(
             val borderWidth = 4.dp
             Image(
                 painter = painterResource(image),
-                contentDescription = image,
+                contentDescription = "author_image",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(70.dp)

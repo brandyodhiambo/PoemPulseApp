@@ -19,19 +19,17 @@ import KottieAnimation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import animateKottieCompositionAsState
-import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.resource
-import rememberKottieComposition
+import kottieComposition.KottieCompositionSpec
+import kottieComposition.animateKottieCompositionAsState
+import kottieComposition.rememberKottieComposition
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun AnimationLoader(
     spec: String,
     modifier: Modifier = Modifier
 ) {
     val composition = rememberKottieComposition(
-        spec = KottieCompositionSpec.File(resource(spec))
+        spec = KottieCompositionSpec.File("files/json/$spec")
     )
 
     val animationState by animateKottieCompositionAsState(

@@ -30,6 +30,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import poempulseapp.shared.generated.resources.Res
+import poempulseapp.shared.generated.resources.author_filled
+import poempulseapp.shared.generated.resources.home_filled
+import poempulseapp.shared.generated.resources.title_filled
 
 suspend fun <T : Any> safeApiCall(
     cachedData: T? = null,
@@ -79,33 +83,12 @@ fun ProvideAppNavigator(navigator: Navigator, content: @Composable () -> Unit) {
 @Composable
 @OptIn(ExperimentalResourceApi::class)
 fun FilledIcon(item: Tab) = when (item.options.index) {
-    (0u).toUShort() -> painterResource("home_filled.xml")
-    (1u).toUShort() -> painterResource("author_filled.xml")
-    (2u).toUShort() -> painterResource("title_filled.xml")
-    else -> painterResource("home_filled.xml")
+    (0u).toUShort() -> painterResource(Res.drawable.home_filled)
+    (1u).toUShort() -> painterResource(Res.drawable.author_filled)
+    (2u).toUShort() -> painterResource(Res.drawable.title_filled)
+    else -> painterResource(Res.drawable.home_filled)
 }
 
-fun divideIntoSmallerParagraphs(paragraph: String, linesPerParagraph: Int): List<String> {
-    val lines = paragraph.split(",")
-    val smallerParagraphs = mutableListOf<String>()
-    var currentParagraph = StringBuilder()
-
-    for (line in lines) {
-        currentParagraph.append(line.trim())
-        currentParagraph.append("\n")
-
-        if (currentParagraph.lines().size >= linesPerParagraph) {
-            smallerParagraphs.add(currentParagraph.toString().trim())
-            currentParagraph = StringBuilder()
-        }
-    }
-
-    if (currentParagraph.isNotEmpty()) {
-        smallerParagraphs.add(currentParagraph.toString().trim())
-    }
-
-    return smallerParagraphs
-}
 
 fun divideIntoSmallerParagraph(paragraph: String, linesPerParagraph: Int): String {
     val lines = paragraph.split(",")

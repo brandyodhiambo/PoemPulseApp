@@ -60,6 +60,8 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
+import poempulseapp.shared.generated.resources.Res
+import poempulseapp.shared.generated.resources.title_filled
 
 @Composable
 fun TitleScreen(
@@ -191,7 +193,7 @@ fun TitleCard(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Icon(
-                painter = painterResource("title_filled.xml"),
+                painter = painterResource(Res.drawable.title_filled),
                 contentDescription = "title_icon",
                 modifier = Modifier.size(30.dp),
                 tint = MaterialTheme.colorScheme.primary

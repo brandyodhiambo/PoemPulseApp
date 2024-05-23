@@ -21,21 +21,45 @@ plugins {
     alias(libs.plugins.sqlDelight.plugin)
 }
 
-kotlin {
-    androidTarget()
+android {
+    compileSdk = (findProperty("android.compileSdk") as String).toInt()
+    namespace = "com.brandyodhiambo.poempulse"
 
-    jvm()
+    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+    sourceSets["main"].res.srcDirs("src/commonMain/composeResources")
+    sourceSets["main"].resources.srcDirs("src/commonMain/composeResources")
 
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64(),
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "shared"
-            isStatic = true
+    defaultConfig {
+        minSdk = (findProperty("android.minSdk") as String).toInt()
+    }
+    kotlin {
+        jvmToolchain(17)
+    }
+
+    buildTypes {
+        debug {
+        }
+        /*create("staging") {
+        }*/
+        getByName("release") {
         }
     }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
+    }
+
+    dependencies {
+        debugImplementation(libs.compose.ui.tooling)
+    }
+}
+
+kotlin {
+    androidTarget()
+    jvm()
+    iosArm64()
+    iosSimulatorArm64()
+
 
     sourceSets {
             commonMain.dependencies {
@@ -60,11 +84,12 @@ kotlin {
                 implementation(libs.ktor.client.serialization)
                 implementation(libs.ktor.client.cio)
 
-                // Voyager
+                // Voyager - Navigation
                 implementation(libs.voyager.navigator)
-                implementation(libs.voyager.bottom.sheet.navigator)
-                implementation(libs.voyager.tab.navigator)
+                implementation(libs.voyager.bottomSheetNavigator)
                 implementation(libs.voyager.transitions)
+                implementation(libs.voyager.tabNavigator)
+                api(libs.voyager.koin)
 
                 //sql delight
                 val sqldelight = "2.0.1"
@@ -73,7 +98,6 @@ kotlin {
                 implementation("app.cash.sqldelight:primitive-adapters:$sqldelight")
 
                 // multiplatform settings
-                val multiplatformsetting = "1.1.1"
                 api(libs.mutliplatform.arg)
                 api(libs.mutliplatform.coroutine)
 
@@ -96,14 +120,6 @@ kotlin {
 
             }
 
-//        val iosX64Main by getting
-//        val iosArm64Main by getting
-//        val iosSimulatorArm64Main by getting
-//        val iosMain by creating {
-//            dependsOn(commonMain)
-//            iosX64Main.dependsOn(this)
-//            iosArm64Main.dependsOn(this)
-//            iosSimulatorArm64Main.dependsOn(this)
             iosMain.dependencies{
                 implementation(libs.ktor.client.darwin)
                 implementation("app.cash.sqldelight:native-driver:2.0.1")
@@ -111,7 +127,6 @@ kotlin {
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.components.resources)
             }
-       // }
             jvmMain.dependencies {
                 implementation(compose.desktop.common)
                 api(libs.swing)
@@ -121,21 +136,7 @@ kotlin {
     }
 }
 
-android {
-    compileSdk = (findProperty("android.compileSdk") as String).toInt()
-    namespace = "com.brandyodhiambo.poempulse"
 
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    sourceSets["main"].res.srcDirs("src/commonMain/resources")
-    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
-
-    defaultConfig {
-        minSdk = (findProperty("android.minSdk") as String).toInt()
-    }
-    kotlin {
-        jvmToolchain(17)
-    }
-}
 
 sqldelight {
     databases {

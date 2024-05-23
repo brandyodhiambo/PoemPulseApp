@@ -24,6 +24,10 @@ import com.brandyodhiambo.poempulse.presentation.title.TitleScreen
 import com.brandyodhiambo.poempulse.presentation.todaypoem.TodayPoemScreen
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import poempulseapp.shared.generated.resources.Res
+import poempulseapp.shared.generated.resources.author_outlined
+import poempulseapp.shared.generated.resources.home_outlined
+import poempulseapp.shared.generated.resources.title_outlined
 
 internal sealed class PoemTab {
 
@@ -38,7 +42,7 @@ internal sealed class PoemTab {
             @Composable
             get() {
                 val title = "Home"
-                val icon = painterResource("home_outlined.xml")
+                val icon = painterResource(Res.drawable.home_outlined)
 
                 return remember {
                     TabOptions(
@@ -61,7 +65,7 @@ internal sealed class PoemTab {
             @Composable
             get() {
                 val title = "Author"
-                val icon = painterResource("author_outlined.xml")
+                val icon = painterResource(Res.drawable.author_outlined)
 
                 return remember {
                     TabOptions(
@@ -84,7 +88,7 @@ internal sealed class PoemTab {
             @Composable
             get() {
                 val title = "Poem Titles"
-                val icon = painterResource("title_outlined.xml")
+                val icon = painterResource(Res.drawable.title_outlined)
 
                 return remember {
                     TabOptions(
