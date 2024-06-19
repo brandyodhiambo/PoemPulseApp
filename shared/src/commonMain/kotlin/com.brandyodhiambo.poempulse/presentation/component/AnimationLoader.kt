@@ -17,19 +17,31 @@ package com.brandyodhiambo.poempulse.presentation.component
 
 import KottieAnimation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import kottieComposition.KottieCompositionSpec
 import kottieComposition.animateKottieCompositionAsState
 import kottieComposition.rememberKottieComposition
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import poempulseapp.shared.generated.resources.Res
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun AnimationLoader(
     spec: String,
     modifier: Modifier = Modifier
 ) {
+    var animation by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit){
+        animation = Res.readBytes("files/json/$spec").decodeToString()
+    }
     val composition = rememberKottieComposition(
-        spec = KottieCompositionSpec.File("files/json/$spec")
+        spec = KottieCompositionSpec.File(animation)
     )
 
     val animationState by animateKottieCompositionAsState(

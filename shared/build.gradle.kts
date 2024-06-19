@@ -19,10 +19,11 @@ plugins {
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.sqlDelight.plugin)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
-    compileSdk = (findProperty("android.compileSdk") as String).toInt()
+    compileSdk = 34
     namespace = "com.brandyodhiambo.poempulse"
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -30,20 +31,30 @@ android {
     sourceSets["main"].resources.srcDirs("src/commonMain/composeResources")
 
     defaultConfig {
-        minSdk = (findProperty("android.minSdk") as String).toInt()
+        minSdk = 24
     }
     kotlin {
         jvmToolchain(17)
     }
 
     buildTypes {
-        debug {
+        getByName("debug") {
+            isMinifyEnabled = false
         }
-        /*create("staging") {
-        }*/
         getByName("release") {
+            isMinifyEnabled = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
+
+   /* buildTypes {
+        debug {
+        }
+        *//*create("staging") {
+        }*//*
+        getByName("release") {
+        }
+    }*/
 
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
@@ -83,6 +94,8 @@ kotlin {
                 implementation(libs.ktor.client.logging)
                 implementation(libs.ktor.client.serialization)
                 implementation(libs.ktor.client.cio)
+
+                api(libs.napier)
 
                 // Voyager - Navigation
                 implementation(libs.voyager.navigator)
@@ -131,6 +144,7 @@ kotlin {
                 implementation(compose.desktop.common)
                 api(libs.swing)
                 implementation(libs.ktor.client.java)
+                implementation(libs.ktor.client.cio)
                 implementation("app.cash.sqldelight:sqlite-driver:2.0.1")
             }
     }

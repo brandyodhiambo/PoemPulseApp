@@ -33,6 +33,7 @@ import com.brandyodhiambo.poempulse.domain.usecase.GetPoemTitleUseCase
 import com.brandyodhiambo.poempulse.domain.usecase.GetTitleLineUseCase
 import com.brandyodhiambo.poempulse.domain.usecase.GetTodayPoemUseCase
 import com.brandyodhiambo.poempulse.platform.DatabaseDriverFactory
+import com.brandyodhiambo.poempulse.platform.httpClient
 import com.brandyodhiambo.poempulse.presentation.main.MainViewModel
 import com.brandyodhiambo.poempulse.presentation.title.TitleViewModel
 import com.brandyodhiambo.poempulse.presentation.todaypoem.TodayPoemViewModel
@@ -40,11 +41,16 @@ import com.brandyodhiambo.poempulse.utils.Constants.BASE_URL
 import database.AuthorEntity
 import database.PoemTitleEntity
 import database.TodayPoemEntity
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
+import io.github.aakira.napier.DebugAntilog
+import io.github.aakira.napier.Napier
+import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.addDefaultResponseValidation
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.accept
 import io.ktor.http.ContentType
 import io.ktor.http.URLProtocol
@@ -58,7 +64,11 @@ fun commonModule() = module {
     * http client
     * */
     single {
-        HttpClient(CIO) {
+        httpClient {
+            expectSuccess = true
+
+            addDefaultResponseValidation()
+
             defaultRequest {
                 url {
                     host = BASE_URL
@@ -68,19 +78,31 @@ fun commonModule() = module {
                 }
             }
 
+            val jsonResponse = Json {
+                isLenient = true
+                ignoreUnknownKeys = true
+                prettyPrint = true
+                encodeDefaults = true
+                allowStructuredMapKeys = true
+            }
+
             install(ContentNegotiation) {
                 json(
-                    Json {
-                        ignoreUnknownKeys = true
-                    },
+                    json = jsonResponse,
                 )
             }
 
-            install(HttpTimeout) {
-               /* requestTimeoutMillis = 3000L
-                connectTimeoutMillis = 3000L
-                socketTimeoutMillis = 3000L*/
+            install(ContentNegotiation) {
+                json(
+                    json = jsonResponse,
+                )
             }
+
+
+           /* install(HttpRequestRetry) {
+                retryIf { _, response -> response.status.value.let { it == 401 } }
+                exponentialDelay()
+            }*/
         }
     }
 

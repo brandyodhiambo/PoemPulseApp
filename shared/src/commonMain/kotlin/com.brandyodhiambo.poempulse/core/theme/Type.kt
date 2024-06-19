@@ -23,53 +23,51 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.brandyodhiambo.poempulse.platform.font
+import org.jetbrains.compose.resources.Font
+import poempulseapp.shared.generated.resources.Res
+import poempulseapp.shared.generated.resources.quattrocento_bold
+import poempulseapp.shared.generated.resources.quattrocento_regular
 
 @Composable
 internal fun getTypography(): Typography {
     val quattrocentoRegular =
-        font(
-            "quattrocento",
-            "quattrocento_regular",
+        Font(
+            resource = Res.font.quattrocento_regular,
             FontWeight.Normal,
             FontStyle.Normal,
         )
 
     val quattrocentoBold =
-        font(
-            "quattrocento",
-            "quattrocento_bold",
+        Font(
+            resource =  Res.font.quattrocento_bold,
             FontWeight.Bold,
             FontStyle.Normal,
         )
 
     val quattrocentoSemiBold =
-        font(
-            "quattrocento",
-            "quattrocento_bold",
+        Font(
+            resource =  Res.font.quattrocento_bold,
             FontWeight.SemiBold,
             FontStyle.Normal,
         )
 
     val quattrocentoExtraBold =
-        font(
-            "quattrocento",
-            "quattrocento_bold",
+        Font(
+            resource =  Res.font.quattrocento_bold,
             FontWeight.ExtraBold,
             FontStyle.Normal,
         )
 
     val quattrocentoMedium =
-        font(
-            "quattrocento",
-            "quattrocento_regular",
+        Font(
+            resource =  Res.font.quattrocento_regular,
             FontWeight.Medium,
             FontStyle.Normal,
         )
 
     val quattrocentoBlack =
-        font(
-            "quattrocento",
-            "quattrocento_bold",
+        Font(
+            resource =  Res.font.quattrocento_bold,
             FontWeight.Black,
             FontStyle.Normal,
         )
