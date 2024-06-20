@@ -1,7 +1,7 @@
-<p align="center"><img src="art/app_logo.png" alt="MealTime" height="150px"></p>
+<p align="center"><img src="art/app_logo.png" alt="PoemPulse" height="150px"></p>
 
 # PoemPulse
-PoemPulse is a Kotlin Multiplatform application that help poem lovers to get random poem on daily basis and different poem titles with most poem authors.
+PoemPulse is a captivating Kotlin Multiplatform application designed for poetry enthusiasts. It delivers a fresh, random poem every day, along with a diverse array of poem titles from numerous renowned authors. Dive into the world of poetry with PoemPulse and discover new favorites daily!
 
 ## 🛠️ WIP 🛠️
 > If you find any bugs or have any suggestions, feel free to open an issue or a pull request.
@@ -13,15 +13,12 @@ PoemPulse is a Kotlin Multiplatform application that help poem lovers to get ran
 
 ## Screenshots
 ### Android
-<img src="art/android_screen1.jpeg"  width="250"/> <img src="art/android_screen2.jpeg"  width="250"/> <img src="art/android_screen3.jpeg" width="250"/>
-
-### iOS
-<img src="art/ios_screen1.png"  width="250"/> <img src="art/ios_screen2.png"  width="250"/> <img src="art/ios_screen3.png"  width="250"/> 
+<img src="art/poem_screen.png"  width="250"/> <img src="art/author_screen.png"  width="250"/> <img src="art/title_screen.png" width="250"/> <img src="art/single_poem_screen.png"  width="250"/> <img src="art/author_poem_screen.png"  width="250"/> 
 
 ### Desktop
-<img src="art/dsk_screen1.png"/>
-<img src="art/dsk_screen2.png"/>
-<img src="art/dsk_screen3.png"/>
+<img src="art/poem_desktop.png"/>
+<img src="art/author_desktop.png"/>
+<img src="art/title_desktop.png"/>
 
 ## Architecture
 The app is shared between Android, iOS and Desktop. The shared code is written in Kotlin and the UI is built with Compose Multiplatform. Shared code, written in Kotlin, is compiled to JVM bytecode for Android and Desktop with Kotlin/JVM and to native binaries for iOS with Kotlin/Native.
@@ -56,11 +53,6 @@ To run the application on android device/emulator:
 
 ### Desktop
 Run the desktop application: `./gradlew :desktopApp:run`
-
-### iOS
-To run the application on iPhone device/simulator:
-- Open `ios/iosApp.xcworkspace` in Xcode and run standard configuration
-- Or use [Kotlin Multiplatform Mobile plugin](https://plugins.jetbrains.com/plugin/14936-kotlin-multiplatform-mobile) for Android Studio
 
 ## License
 ```xml

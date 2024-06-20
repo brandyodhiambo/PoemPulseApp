@@ -47,18 +47,6 @@ android {
         }
     }
 
-   /* buildTypes {
-        debug {
-        }
-        *//*create("staging") {
-        }*//*
-        getByName("release") {
-        }
-    }*/
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
-    }
 
     dependencies {
         debugImplementation(libs.compose.ui.tooling)
