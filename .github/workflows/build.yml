@@ -32,7 +32,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Spotless check
-        run: ./gradlew spotlessCheck -- stacktrace
+        run: ./gradlew spotlessCheck
 
       - name: Build app
-        run: ./gradlew assemble --stacktrace
+        run: ./gradlew assemble

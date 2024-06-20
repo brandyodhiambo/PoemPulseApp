@@ -45,7 +45,7 @@ class TitleViewModel(
         getTitle()
     }
 
-    private fun getTitle() {
+    fun getTitle() {
         viewModelScope.launch {
             _titleState.update { it.copy(isLoading = true) }
             when (val result = getPoemTitleUseCase()) {

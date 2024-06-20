@@ -26,6 +26,27 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.DrawableResource
+import poempulseapp.shared.generated.resources.Res
+import poempulseapp.shared.generated.resources.poemauthor1
+import poempulseapp.shared.generated.resources.poemauthor11
+import poempulseapp.shared.generated.resources.poemauthor12
+import poempulseapp.shared.generated.resources.poemauthor13
+import poempulseapp.shared.generated.resources.poemauthor14
+import poempulseapp.shared.generated.resources.poemauthor15
+import poempulseapp.shared.generated.resources.poemauthor16
+import poempulseapp.shared.generated.resources.poemauthor17
+import poempulseapp.shared.generated.resources.poemauthor18
+import poempulseapp.shared.generated.resources.poemauthor19
+import poempulseapp.shared.generated.resources.poemauthor2
+import poempulseapp.shared.generated.resources.poemauthor20
+import poempulseapp.shared.generated.resources.poemauthor3
+import poempulseapp.shared.generated.resources.poemauthor4
+import poempulseapp.shared.generated.resources.poemauthor5
+import poempulseapp.shared.generated.resources.poemauthor6
+import poempulseapp.shared.generated.resources.poemauthor7
+import poempulseapp.shared.generated.resources.poemauthor8
+import poempulseapp.shared.generated.resources.poemauthor9
 
 class AuthorViewModel(
     private val getAuthorUseCase: GetAuthorUseCase,
@@ -39,33 +60,33 @@ class AuthorViewModel(
     val authorUiState get() = _authorUiState.asStateFlow()
 
     private val viewModelScope = screenModelScope
-    val authorImage = listOf(
-        "poemauthor1.jpeg",
-        "poemauthor2.jpeg",
-        "poemauthor3.jpeg",
-        "poemauthor4.jpeg",
-        "poemauthor5.jpeg",
-        "poemauthor6.jpeg",
-        "poemauthor7.jpeg",
-        "poemauthor8.jpeg",
-        "poemauthor9.jpeg",
-        "poemauthor11.jpeg",
-        "poemauthor12.jpeg",
-        "poemauthor13.jpeg",
-        "poemauthor14.jpeg",
-        "poemauthor15.jpeg",
-        "poemauthor16.jpeg",
-        "poemauthor17.jpeg",
-        "poemauthor18.jpeg",
-        "poemauthor19.jpeg",
-        "poemauthor20.jpeg",
+    val authorImage = listOf<DrawableResource>(
+        Res.drawable.poemauthor1,
+        Res.drawable.poemauthor2,
+        Res.drawable.poemauthor3,
+        Res.drawable.poemauthor4,
+        Res.drawable.poemauthor5,
+        Res.drawable.poemauthor6,
+        Res.drawable.poemauthor7,
+        Res.drawable.poemauthor8,
+        Res.drawable.poemauthor9,
+        Res.drawable.poemauthor11,
+        Res.drawable.poemauthor12,
+        Res.drawable.poemauthor13,
+        Res.drawable.poemauthor14,
+        Res.drawable.poemauthor15,
+        Res.drawable.poemauthor16,
+        Res.drawable.poemauthor17,
+        Res.drawable.poemauthor18,
+        Res.drawable.poemauthor19,
+        Res.drawable.poemauthor20,
     )
 
     init {
         getAuthors()
     }
 
-    private fun getAuthors() {
+    fun getAuthors() {
         viewModelScope.launch {
             _authorUiState.update { it.copy(isLoading = true) }
             when (val result = getAuthorUseCase()) {

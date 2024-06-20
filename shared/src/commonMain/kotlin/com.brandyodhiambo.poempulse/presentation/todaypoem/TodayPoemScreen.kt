@@ -27,9 +27,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -50,6 +53,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.brandyodhiambo.poempulse.domain.model.todaypoem.TodayPoem
+import com.brandyodhiambo.poempulse.presentation.component.DataNotFound
+import com.brandyodhiambo.poempulse.presentation.component.LoadingAnimation
 import com.brandyodhiambo.poempulse.utils.LocalAppNavigator
 import com.brandyodhiambo.poempulse.utils.ObserveAsEvents
 import com.brandyodhiambo.poempulse.utils.UiEvents
@@ -84,16 +89,20 @@ fun TodayPoemScreen(
             navigator.push(
                 TodayPoemDetail(it)
             )
+        },
+        onRefreshPoems = {
+            todayPoemViewModel.getTodayPoem()
         }
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun TodayPoemContent(
     todayPoemState: TodayPoemState,
     snackbarHostState: @Composable () -> Unit,
-    onPoemClicked: (poem: TodayPoem) -> Unit
+    onPoemClicked: (poem: TodayPoem) -> Unit,
+    onRefreshPoems: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -123,29 +132,28 @@ fun TodayPoemContent(
         },
         snackbarHost = snackbarHostState
     ) { paddingValue ->
+
+        val pullRefreshState =
+            rememberPullRefreshState(
+                refreshing = false,
+                onRefresh = onRefreshPoems,
+            )
         Box(
             modifier = Modifier
+                .pullRefresh(pullRefreshState)
                 .fillMaxSize()
                 .padding(paddingValue)
         ) {
 
             if (todayPoemState.isLoading) {
-                CircularProgressIndicator(
+                LoadingAnimation(
                     modifier = Modifier.align(Alignment.Center),
+                    circleSize = 16.dp,
                 )
             }
 
             if (todayPoemState.poems.isEmpty() && todayPoemState.isLoading.not()) {
-                Text(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .fillMaxWidth(),
-                    text = "No poems found",
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontSize = 20.sp,
-                        textAlign = TextAlign.Center,
-                    )
-                )
+                DataNotFound(title = "No poems found")
             }
 
             if (todayPoemState.poems.isNotEmpty() && todayPoemState.isLoading.not()) {
@@ -162,6 +170,12 @@ fun TodayPoemContent(
                     }
                 }
             }
+
+            PullRefreshIndicator(
+                todayPoemState.isLoading,
+                pullRefreshState,
+                Modifier.align(Alignment.TopCenter),
+            )
         }
     }
 }

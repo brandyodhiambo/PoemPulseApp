@@ -17,20 +17,11 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.compose.compiler)
 }
 
-kotlin {
-    androidTarget()
-    sourceSets {
-            androidMain.dependencies {
-                implementation(project(":shared"))
-            }
-        }
-    }
-
-
 android {
-    compileSdk = (findProperty("android.compileSdk") as String).toInt()
+    compileSdk = 34
     namespace = "com.brandyodhiambo"
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -45,9 +36,22 @@ android {
     }
 
     buildTypes{
+        getByName("debug") {
+            versionNameSuffix = " - debug-1"
+            applicationIdSuffix = ".debug"
+            buildConfigField("int", "PATCH_VERSION_CODE", "1")
+            signingConfig = signingConfigs.getByName("debug")
+        }
+
         getByName("release"){
             isMinifyEnabled = true
             isShrinkResources = true
+
+
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
         }
     }
 
@@ -58,11 +62,28 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    buildToolsVersion = "34.0.0"
+
     kotlin {
         jvmToolchain(17)
     }
+    buildFeatures {
+        compose = true
+    }
+
+
 }
+
+kotlin {
+    androidTarget()
+    sourceSets {
+            androidMain.dependencies {
+                implementation(project(":shared"))
+            }
+        }
+    }
+
+
+
 
 dependencies {
     implementation(libs.koin.android)

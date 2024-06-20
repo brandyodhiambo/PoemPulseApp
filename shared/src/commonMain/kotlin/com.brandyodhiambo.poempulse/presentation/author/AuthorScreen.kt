@@ -32,9 +32,12 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -55,10 +58,13 @@ import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.brandyodhiambo.poempulse.presentation.component.DataNotFound
+import com.brandyodhiambo.poempulse.presentation.component.LoadingAnimation
 import com.brandyodhiambo.poempulse.utils.LocalAppNavigator
 import com.brandyodhiambo.poempulse.utils.ObserveAsEvents
 import com.brandyodhiambo.poempulse.utils.UiEvents
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
@@ -92,17 +98,21 @@ fun AuthorScreen(
         snackbarHostState = { SnackbarHost(snackbarHostState) },
         onAuthorClicked = {
             navigator.push(AuthorPoemScreen(it))
+        },
+        onRefreshAuthor = {
+            authorViewModel.getAuthors()
         }
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun AuthorScreenContent(
-    authorImage: List<String>,
+    authorImage: List<DrawableResource>,
     authorState: AuthorState,
     snackbarHostState: @Composable () -> Unit,
-    onAuthorClicked: (String) -> Unit
+    onAuthorClicked: (String) -> Unit,
+    onRefreshAuthor: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -121,19 +131,28 @@ fun AuthorScreenContent(
         },
         snackbarHost = snackbarHostState
     ) { paddingValues ->
-        Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+
+        val pullRefreshState =
+            rememberPullRefreshState(
+                refreshing = false,
+                onRefresh = onRefreshAuthor,
+            )
+
+        Box(
+            modifier = Modifier
+                .pullRefresh(pullRefreshState)
+                .fillMaxSize().padding(paddingValues)
+        ) {
 
             if (authorState.isLoading) {
-                CircularProgressIndicator(
+                LoadingAnimation(
                     modifier = Modifier.align(Alignment.Center),
+                    circleSize = 16.dp,
                 )
             }
 
             if (authorState.author.isEmpty() && authorState.isLoading.not()) {
-                Text(
-                    text = "No author found",
-                    modifier = Modifier.align(Alignment.Center),
-                )
+                DataNotFound("No author found")
             }
 
             if (authorState.author.isNotEmpty() && authorState.isLoading.not()) {
@@ -151,6 +170,12 @@ fun AuthorScreenContent(
                     }
                 }
             }
+
+            PullRefreshIndicator(
+                authorState.isLoading,
+                pullRefreshState,
+                Modifier.align(Alignment.TopCenter),
+            )
         }
     }
 }
@@ -159,7 +184,7 @@ fun AuthorScreenContent(
 @Composable
 fun AuthorCard(
     modifier: Modifier = Modifier,
-    image: String,
+    image: DrawableResource,
     authorName: String,
     onAuthorClicked: (String) -> Unit
 ) {
@@ -182,7 +207,7 @@ fun AuthorCard(
             val borderWidth = 4.dp
             Image(
                 painter = painterResource(image),
-                contentDescription = image,
+                contentDescription = "author_image",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(70.dp)
